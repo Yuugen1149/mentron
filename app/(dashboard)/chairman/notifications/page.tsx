@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 
 export default function ChairmanNotificationsPage() {
@@ -14,6 +14,23 @@ export default function ChairmanNotificationsPage() {
         targetDept: '',
         targetYear: '',
     });
+    const [announcementsList, setAnnouncementsList] = useState<any[]>([]);
+
+    useEffect(() => {
+        fetchAnnouncements();
+    }, []);
+
+    const fetchAnnouncements = async () => {
+        try {
+            const res = await fetch('/api/announcements');
+            const data = await res.json();
+            if (res.ok && data.announcements) {
+                setAnnouncementsList(data.announcements);
+            }
+        } catch (err) {
+            console.error('Failed to fetch announcements');
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,10 +49,11 @@ export default function ChairmanNotificationsPage() {
             if (response.ok && data.success) {
                 setFeedback({
                     type: 'success',
-                    message: `System announcement sent to ${data.recipientsCount} user(s)! ${data.emailSent ? 'Emails delivered.' : 'Email delivery pending.'}`
+                    message: `System announcement sent to ${data.recipientsCount} user(s)! ${data.emailSent ? 'Emails delivered.' : 'Email delivery pending (Check API Key).'}`
                 });
                 setShowCreateForm(false);
                 setAnnouncement({ title: '', message: '', priority: 'normal', targetDept: '', targetYear: '' });
+                fetchAnnouncements(); // Refresh list
             } else {
                 setFeedback({
                     type: 'error',
@@ -147,20 +165,32 @@ export default function ChairmanNotificationsPage() {
                     <div className="glass-card">
                         <h3 className="text-xl font-semibold mb-4">Recent Announcements</h3>
                         <div className="space-y-3">
-                            <div className="p-4 rounded-lg bg-white/5 border-l-4 border-red-500">
-                                <div className="flex items-start justify-between mb-2">
-                                    <h4 className="font-semibold">System Maintenance Scheduled</h4>
-                                    <span className="px-2 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-semibold">Urgent</span>
-                                </div>
-                                <p className="text-text-secondary text-sm mb-2">The system will be under maintenance on Saturday from 2 AM to 6 AM.</p>
-                                <div className="flex items-center gap-4 text-xs text-text-secondary">
-                                    <span>All Users</span>
-                                    <span>•</span>
-                                    <span>2 hours ago</span>
-                                    <span>•</span>
-                                    <span>156 views</span>
-                                </div>
-                            </div>
+                            {announcementsList.length === 0 ? (
+                                <p className="text-text-secondary text-sm">No announcements found.</p>
+                            ) : (
+                                announcementsList.map((item) => (
+                                    <div key={item.id} className={`p-4 rounded-lg bg-white/5 border-l-4 ${item.priority === 'urgent' ? 'border-red-500' : item.priority === 'high' ? 'border-orange-500' : 'border-primary-cyan'
+                                        }`}>
+                                        <div className="flex items-start justify-between mb-2">
+                                            <h4 className="font-semibold">{item.title}</h4>
+                                            {item.priority !== 'normal' && (
+                                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${item.priority === 'urgent' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400'
+                                                    }`}>{item.priority.toUpperCase()}</span>
+                                            )}
+                                        </div>
+                                        <p className="text-text-secondary text-sm mb-2">{item.message}</p>
+                                        <div className="flex items-center gap-4 text-xs text-text-secondary">
+                                            <span>{item.target_department || 'All Depts'}</span>
+                                            <span>•</span>
+                                            <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                                            <span>•</span>
+                                            <span className={item.email_sent ? 'text-green-400' : 'text-yellow-400'}>
+                                                {item.email_sent ? 'Sent via Email' : 'Email Pending'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
 

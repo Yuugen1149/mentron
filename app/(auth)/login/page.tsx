@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
@@ -12,9 +12,20 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [rememberMe, setRememberMe] = useState(true); // Default to true (Persistent)
     const router = useRouter();
     const supabase = createClient();
+
+    // Redirect if already logged in (Fixes Back button showing Login page)
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                // Determine role and redirect (simplified check for speed)
+                router.replace('/');
+            }
+        };
+        checkSession();
+    }, [router, supabase]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,14 +37,6 @@ export default function LoginPage() {
             setError('Only Gmail accounts are allowed');
             setLoading(false);
             return;
-        }
-
-        // Set Persistence Cookie
-        if (rememberMe) {
-            document.cookie = `${AUTH_CONFIG.REMEMBER_ME_COOKIE}=true; path=/; max-age=${AUTH_CONFIG.PERSISTENT_SESSION_DURATION}; SameSite=Lax; Secure`;
-        } else {
-            // Delete cookie or set to false/session
-            document.cookie = `${AUTH_CONFIG.REMEMBER_ME_COOKIE}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
         }
 
         try {
@@ -61,9 +64,9 @@ export default function LoginPage() {
                     }
 
                     if (adminData.role === 'chairman') {
-                        router.push('/chairman');
+                        router.replace('/chairman');
                     } else {
-                        router.push('/execom');
+                        router.replace('/execom');
                     }
                 } else {
                     // Check if student
@@ -74,7 +77,7 @@ export default function LoginPage() {
                         .single();
 
                     if (studentData) {
-                        router.push('/student');
+                        router.replace('/student');
                     } else {
                         await supabase.auth.signOut();
                         setError('User profile not found. Please contact support.');
@@ -196,24 +199,8 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        {/* Remember Me & Forgot Password */}
-                        <div className="flex items-center justify-between">
-                            <label className="flex items-center gap-2 cursor-pointer group">
-                                <div className="relative flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={rememberMe}
-                                        onChange={(e) => setRememberMe(e.target.checked)}
-                                        className="peer sr-only"
-                                    />
-                                    <div className="w-5 h-5 rounded border border-white/20 bg-white/5 peer-checked:bg-primary-cyan peer-checked:border-primary-cyan transition-all duration-200"></div>
-                                    <svg className="absolute w-3.5 h-3.5 text-deep-bg left-0.5 top-0.5 opacity-0 peer-checked:opacity-100 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </div>
-                                <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors select-none">Remember me</span>
-                            </label>
-
+                        {/* Forgot Password Link - Centered if alone, or right aligned */}
+                        <div className="flex justify-end">
                             <Link
                                 href="/forgot-password"
                                 className="text-sm font-medium text-primary-cyan hover:text-cyan-300 transition-colors"

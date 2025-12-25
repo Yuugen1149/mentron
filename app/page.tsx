@@ -1,6 +1,35 @@
-// Root page - rewrite handles serving landing page
-// The Next.js rewrite in next.config.ts serves /landing/index.html at /
-export default function RootPage() {
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
+
+export default async function RootPage() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+        // Check if user is an admin
+        const { data: admin } = await supabase
+            .from('admins')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+        if (admin) {
+            if (admin.role === 'chairman') redirect('/chairman');
+            if (admin.role === 'execom') redirect('/execom');
+        }
+
+        // Check if user is a student
+        const { data: student } = await supabase
+            .from('group_members')
+            .select('id')
+            .eq('id', user.id)
+            .single();
+
+        if (student) {
+            redirect('/student');
+        }
+    }
+
     return (
         <iframe
             src="/landing/index.html"
@@ -19,3 +48,4 @@ export default function RootPage() {
         />
     );
 }
+

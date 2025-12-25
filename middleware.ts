@@ -25,11 +25,15 @@ export async function middleware(request: NextRequest) {
                     cookiesToSet.forEach(({ name, value, options }) => {
                         const cookieOptions = { ...options }
 
-                        // If not persistent, remove maxAge and expires for auth cookies
-                        // This makes them Session Cookies (cleared on browser close)
-                        if (!isPersistent) {
-                            delete cookieOptions.maxAge
-                            delete cookieOptions.expires
+                        // Enforce Persistent Session (Always On)
+                        // User requested login to stay until manual logout.
+                        // We ensure maxAge is always set to the persistent duration.
+                        cookieOptions.maxAge = AUTH_CONFIG.PERSISTENT_SESSION_DURATION;
+                        cookieOptions.expires = new Date(Date.now() + AUTH_CONFIG.PERSISTENT_SESSION_DURATION * 1000);
+
+                        // Allow testing on HTTP in development
+                        if (process.env.NODE_ENV === 'development') {
+                            cookieOptions.secure = false;
                         }
 
                         request.cookies.set(name, value)
@@ -56,11 +60,7 @@ export async function middleware(request: NextRequest) {
     }
 
     if (isAuthPage && user) {
-        // Optional: Redirect strictly if already logged in?
-        // For now, let the page handle it or redirect to /
-        // Check user metadata/table to know where to go? 
-        // We'll skip strict redirect here to avoid loops, or implement simpler check.
-        // But let's keep it simple: if trying to access login while logged in, maybe go to home.
+        return NextResponse.redirect(new URL('/', request.url))
     }
 
     return response

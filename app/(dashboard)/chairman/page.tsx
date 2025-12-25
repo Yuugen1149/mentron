@@ -32,20 +32,52 @@ export default async function ChairmanDashboard() {
         .from('group_members')
         .select('*', { count: 'exact', head: true });
 
+    // Calculate Student Growth (Last 7 Days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const { count: newStudents } = await supabase
+        .from('group_members')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', sevenDaysAgo.toISOString());
+
     const { count: totalAdmins } = await supabase
         .from('admins')
         .select('*', { count: 'exact', head: true })
         .eq('is_active', true);
 
+    // Calculate Admin Growth
+    const { count: newAdmins } = await supabase
+        .from('admins')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_active', true)
+        .gte('created_at', sevenDaysAgo.toISOString());
+
     const { count: totalMaterials } = await supabase
         .from('materials')
         .select('*', { count: 'exact', head: true });
+
+    // Calculate Materials Growth
+    const { count: newMaterials } = await supabase
+        .from('materials')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', sevenDaysAgo.toISOString());
 
     const { data: totalViews } = await supabase
         .from('materials')
         .select('view_count');
 
     const viewCount = totalViews?.reduce((sum, m) => sum + (m.view_count || 0), 0) || 0;
+
+    // Helper to calculate percentage growth
+    const calculateGrowth = (total: number, newCount: number) => {
+        const previous = total - newCount;
+        if (previous <= 0) return newCount > 0 ? 100 : 0; // If started from 0, 100% growth
+        return Math.round((newCount / previous) * 100);
+    };
+
+    const studentGrowth = calculateGrowth(totalStudents || 0, newStudents || 0);
+    const adminGrowth = calculateGrowth(totalAdmins || 0, newAdmins || 0);
+    const materialGrowth = calculateGrowth(totalMaterials || 0, newMaterials || 0);
 
     // Get all admins for management
     const { data: admins } = await supabase
@@ -99,7 +131,7 @@ export default async function ChairmanDashboard() {
                         <StatCard
                             title="Total Students"
                             value={totalStudents || 0}
-                            trend={{ percentage: 12, direction: 'up' }}
+                            trend={{ percentage: studentGrowth, direction: 'up' }}
                             subtitle="Across all departments"
                             chartData={mockWeeklyData}
                             color="blue"
@@ -113,7 +145,7 @@ export default async function ChairmanDashboard() {
                         <StatCard
                             title="Active Admins"
                             value={totalAdmins || 0}
-                            trend={{ percentage: 5, direction: 'up' }}
+                            trend={{ percentage: adminGrowth, direction: 'up' }}
                             subtitle="Execom members"
                             chartData={[8, 10, 9, 11, 10, 11, 11]}
                             color="purple"
@@ -127,7 +159,7 @@ export default async function ChairmanDashboard() {
                         <StatCard
                             title="Total Materials"
                             value={totalMaterials || 0}
-                            trend={{ percentage: 8, direction: 'up' }}
+                            trend={{ percentage: materialGrowth, direction: 'up' }}
                             subtitle="All departments"
                             chartData={[5, 8, 12, 15, 18, 22, 25]}
                             color="cyan"
@@ -141,8 +173,9 @@ export default async function ChairmanDashboard() {
                         <StatCard
                             title="Total Views"
                             value={viewCount}
-                            trend={{ percentage: 15, direction: 'up' }}
-                            subtitle="Last 7 days"
+                            // Trend hidden until view history is implemented
+                            trend={undefined}
+                            subtitle="Total views"
                             chartData={[45, 52, 48, 61, 55, 67, 72]}
                             color="pink"
                             icon={

@@ -1,11 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
+interface RouteParams {
+    params: Promise<{ id: string }>;
+}
+
 // POST /api/notifications/mark-read/:id
-export async function POST(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
+export async function POST(request: Request, { params }: RouteParams) {
+    const { id } = await params;
     const supabase = await createClient();
 
     try {
@@ -17,7 +19,7 @@ export async function POST(
         const { error } = await supabase
             .from('notifications')
             .update({ read: true })
-            .eq('id', params.id)
+            .eq('id', id)
             .eq('user_id', user.id);
 
         if (error) throw error;

@@ -1,12 +1,14 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
+interface RouteParams {
+    params: Promise<{ groupId: string }>;
+}
+
 // PATCH - Update group details
-export async function PATCH(
-    request: Request,
-    { params }: { params: { groupId: string } }
-) {
+export async function PATCH(request: Request, { params }: RouteParams) {
     try {
+        const { groupId } = await params;
         const supabase = await createClient();
 
         const { data: { user } } = await supabase.auth.getUser();
@@ -25,7 +27,6 @@ export async function PATCH(
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
-        const { groupId } = params;
         const body = await request.json();
         const { name, description, color } = body;
 
@@ -70,11 +71,9 @@ export async function PATCH(
 }
 
 // DELETE - Delete custom group
-export async function DELETE(
-    request: Request,
-    { params }: { params: { groupId: string } }
-) {
+export async function DELETE(request: Request, { params }: RouteParams) {
     try {
+        const { groupId } = await params;
         const supabase = await createClient();
 
         const { data: { user } } = await supabase.auth.getUser();
@@ -92,8 +91,6 @@ export async function DELETE(
         if (!admin) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
-
-        const { groupId } = params;
 
         // Fetch the group to check if it's deletable
         const { data: group } = await supabase

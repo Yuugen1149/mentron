@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 interface NavItem {
     id: string;
@@ -221,34 +221,105 @@ export function NavigationDock({ userRole }: NavigationDockProps) {
             </nav>
 
             {/* Mobile Bottom Navigation */}
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-nav-bg backdrop-blur-xl border-t border-nav-border z-50 mobile-nav-safe">
-                <div className="h-full flex items-center justify-around px-2">
-                    {allItems.slice(0, 5).map((item) => {
-                        const active = item.id === activeId;
+            <MobileNavigation
+                dashboardItem={allItems.find(i => i.id === 'dashboard')!}
+                settingsItem={allItems.find(i => i.id === 'settings')!}
+                otherItems={allItems.filter(i => i.id !== 'dashboard' && i.id !== 'settings')}
+                activeId={activeId}
+            />
+        </>
+    );
+}
 
-                        return (
-                            <Link
-                                key={item.id}
-                                href={item.href}
-                                className="relative flex flex-col items-center gap-1 px-3 py-2 touch-manipulation"
-                            >
-                                <div
-                                    className={`w-6 h-6 transition-colors ${active ? 'text-primary-cyan' : 'text-text-secondary'
-                                        }`}
-                                >
-                                    {item.icon}
-                                    {item.badge && (
-                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent-pink rounded-full text-xs font-bold flex items-center justify-center">
-                                            {item.badge}
-                                        </span>
-                                    )}
-                                </div>
-                                <span className={`text-xs font-medium ${active ? 'text-primary-cyan' : 'text-text-secondary'}`}>
-                                    {item.label}
-                                </span>
-                            </Link>
-                        );
-                    })}
+function MobileNavigation({
+    dashboardItem,
+    settingsItem,
+    otherItems,
+    activeId
+}: {
+    dashboardItem: NavItem;
+    settingsItem: NavItem;
+    otherItems: NavItem[];
+    activeId: string | null;
+}) {
+    const [showMore, setShowMore] = useState(false);
+
+    return (
+        <>
+            {/* More Menu Backdrop */}
+            {showMore && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
+                    onClick={() => setShowMore(false)}
+                />
+            )}
+
+            {/* More Menu Popup */}
+            <div
+                className={`fixed bottom-20 left-4 right-4 bg-[#0A0A0F]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-4 grid grid-cols-4 gap-4 z-50 lg:hidden transition-all duration-300 origin-bottom ${showMore ? 'scale-100 opacity-100 translate-y-0' : 'scale-95 opacity-0 translate-y-4 pointer-events-none'
+                    }`}
+            >
+                {otherItems.map((item) => {
+                    const active = item.id === activeId;
+                    return (
+                        <Link
+                            key={item.id}
+                            href={item.href}
+                            onClick={() => setShowMore(false)}
+                            className="flex flex-col items-center gap-2"
+                        >
+                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${active ? 'bg-primary-cyan text-background' : 'bg-white/5 text-text-secondary'
+                                }`}>
+                                <div className="w-6 h-6">{item.icon}</div>
+                            </div>
+                            <span className={`text-[10px] sm:text-xs font-medium text-center leading-tight ${active ? 'text-primary-cyan' : 'text-text-secondary'
+                                }`}>
+                                {item.label}
+                            </span>
+                        </Link>
+                    );
+                })}
+            </div>
+
+            {/* Mobile Tab Bar */}
+            <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-nav-bg backdrop-blur-xl border-t border-nav-border z-50 mobile-nav-safe">
+                <div className="h-full flex items-center justify-around px-6">
+                    {/* Dashboard Tab */}
+                    <Link
+                        href={dashboardItem.href}
+                        className={`flex flex-col items-center gap-1 p-2 ${dashboardItem.id === activeId ? 'text-primary-cyan' : 'text-text-secondary'
+                            }`}
+                        onClick={() => setShowMore(false)}
+                    >
+                        <div className="w-6 h-6">{dashboardItem.icon}</div>
+                        <span className="text-xs font-medium">Home</span>
+                    </Link>
+
+                    {/* More Tab - Centered */}
+                    <button
+                        onClick={() => setShowMore(!showMore)}
+                        className={`flex flex-col items-center gap-1 p-2 -mt-6 ${showMore || otherItems.some(i => i.id === activeId) ? 'text-primary-cyan' : 'text-text-secondary'
+                            }`}
+                    >
+                        <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform duration-200 ${showMore ? 'bg-primary-cyan text-background rotate-45' : 'bg-[#1A1A24] border border-white/10 text-current'
+                            } ${otherItems.some(i => i.id === activeId) && !showMore ? 'border-primary-cyan text-primary-cyan' : ''}`}>
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        </div>
+                        <span className="text-xs font-medium">More</span>
+                    </button>
+
+                    {/* Settings Tab */}
+                    <Link
+                        href={settingsItem.href}
+                        className={`flex flex-col items-center gap-1 p-2 ${settingsItem.id === activeId ? 'text-primary-cyan' : 'text-text-secondary'
+                            }`}
+                        onClick={() => setShowMore(false)}
+                    >
+                        <div className="w-6 h-6">{settingsItem.icon}</div>
+                        <span className="text-xs font-medium">Settings</span>
+                    </Link>
                 </div>
             </nav>
         </>

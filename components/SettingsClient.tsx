@@ -188,8 +188,8 @@ export function SettingsClient({ admin, userRole }: SettingsClientProps) {
 
                             {passwordFeedback && (
                                 <div className={`mb-4 p-4 rounded-xl flex items-start gap-3 ${passwordFeedback.type === 'success'
-                                        ? 'bg-green-500/10 border border-green-500/20'
-                                        : 'bg-accent-pink/10 border border-accent-pink/20'
+                                    ? 'bg-green-500/10 border border-green-500/20'
+                                    : 'bg-accent-pink/10 border border-accent-pink/20'
                                     }`}>
                                     <svg className={`w-5 h-5 flex-shrink-0 mt-0.5 ${passwordFeedback.type === 'success' ? 'text-green-400' : 'text-accent-pink'
                                         }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,8 +288,8 @@ export function SettingsClient({ admin, userRole }: SettingsClientProps) {
 
                             {notificationFeedback && (
                                 <div className={`mb-4 p-3 rounded-xl text-sm ${notificationFeedback.type === 'success'
-                                        ? 'bg-green-500/10 text-green-400'
-                                        : 'bg-accent-pink/10 text-accent-pink'
+                                    ? 'bg-green-500/10 text-green-400'
+                                    : 'bg-accent-pink/10 text-accent-pink'
                                     }`}>
                                     {notificationFeedback.message}
                                 </div>
@@ -340,13 +340,20 @@ export function SettingsClient({ admin, userRole }: SettingsClientProps) {
                             <p className="text-sm text-text-secondary mb-4">
                                 These actions are irreversible. Please be careful.
                             </p>
-                            <button
-                                className="btn bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400"
-                                disabled
-                                title="Coming soon"
-                            >
-                                Reset All Settings
-                            </button>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <button
+                                    onClick={async () => {
+                                        await supabase.auth.signOut();
+                                        window.location.href = '/';
+                                    }}
+                                    className="btn bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-400 justify-center"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Sign Out
+                                </button>
+                            </div>
                         </div>
                     </div>
 

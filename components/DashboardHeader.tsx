@@ -31,15 +31,7 @@ export function DashboardHeader({ userName, subtitle, userRole, onSignOut }: Das
                     <p className="text-text-secondary text-sm sm:text-base">{subtitle}</p>
                 </div>
 
-                {/* Mobile: Just Sign Out */}
-                {onSignOut && (
-                    <button
-                        onClick={onSignOut}
-                        className="md:hidden px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-sm font-medium whitespace-nowrap"
-                    >
-                        Sign Out
-                    </button>
-                )}
+
             </div>
 
             {/* Bottom Row - Search and Actions (Desktop) */}
@@ -64,15 +56,7 @@ export function DashboardHeader({ userName, subtitle, userRole, onSignOut }: Das
                     <span className="absolute top-1 right-1 w-2 h-2 bg-accent-pink rounded-full"></span>
                 </button>
 
-                {/* Sign Out (Desktop) */}
-                {onSignOut && (
-                    <button
-                        onClick={onSignOut}
-                        className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-sm font-medium"
-                    >
-                        Sign Out
-                    </button>
-                )}
+
             </div>
 
             {/* Mobile Search Bar */}

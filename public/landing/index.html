@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MENTRON - Student-Driven Academic Mentorship</title>
+    <meta name="description" content="Empowering students through academic excellence">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&family=Caveat:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/landing/css/cinematic.css">
+
+    <!-- Three.js for Particles -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <!-- GSAP for Scroll Animation -->
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+</head>
+
+<body>
+    <!-- ============================================
+         PARTICLE CANVAS (Three.js WebGL)
+         ============================================ -->
+    <div id="particleCanvas"></div>
+
+    <!-- MENTRON text that fades in during burst (outside canvas for proper z-index) -->
+    <div id="burstText" class="burst-text">MENTRON</div>
+
+    <!-- ============================================
+         WAVE OVERLAY (rises from bottom)
+         ============================================ -->
+    <div class="wave-overlay" id="waveOverlay"></div>
+
+    <!-- ============================================
+         HERO SECTION (Initial State)
+         ============================================ -->
+    <section class="hero-scene" id="heroScene">
+        <!-- Hero Content (below the sphere) -->
+        <div class="hero-content" id="heroContent">
+            <p class="hero-subtitle">Your gateway to academic excellence</p>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator" id="scrollIndicator">
+            <span>Scroll</span>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         FLOATING HEADER (emerges after burst)
+         ============================================ -->
+    <header class="floating-header" id="floatingHeader">
+        <div class="header-inner">
+            <a href="/" class="header-logo">
+                <img src="/landing/mentron-logo.png" alt="Mentron" class="logo-img">
+            </a>
+            <nav class="header-nav">
+                <a href="/login" class="nav-btn nav-btn--secondary">Login</a>
+                <a href="/dashboard" class="nav-btn nav-btn--primary">Dashboard</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ============================================
+         CONTENT SECTIONS (after header locks)
+         ============================================ -->
+    <main class="content-main" id="contentMain">
+
+        <!-- Section: What is Mentron -->
+        <section class="content-section" id="sectionMentron">
+            <div class="section-inner">
+                <!-- New Content: Mission Statement -->
+                <div class="mission-content">
+                    <h2 class="mission-headline reveal-item">Where Knowledge Flows and Students Grow</h2>
+                    <p class="mission-subtitle reveal-item">A student-led academic mentorship initiative under ISTE
+                        SCTCE</p>
+
+                    <div class="mission-grid">
+                        <!-- Card 1: Guidance -->
+                        <div class="mission-card reveal-card">
+                            <div class="card-icon">🎓</div>
+                            <h3>Guidance</h3>
+                            <p>Connects juniors with seniors who transform experience into guidance and confusion into
+                                clarity.</p>
+                        </div>
+
+                        <!-- Card 2: Resources -->
+                        <div class="mission-card reveal-card">
+                            <div class="card-icon">📚</div>
+                            <h3>Resources</h3>
+                            <p>Provides access to previous year questions, curated notes, and smart study resources.</p>
+                        </div>
+
+                        <!-- Card 3: Support -->
+                        <div class="mission-card reveal-card">
+                            <div class="card-icon">🤝</div>
+                            <h3>Support</h3>
+                            <p>Offers peer mentoring, doubt-clearing sessions, and exam preparation strategies.</p>
+                        </div>
+
+                        <!-- Card 4: Growth -->
+                        <div class="mission-card reveal-card">
+                            <div class="card-icon">🚀</div>
+                            <h3>Growth</h3>
+                            <p>Supports communication skills, confidence building, and interview readiness.</p>
+                        </div>
+
+                        <!-- Card 5: Community -->
+                        <div class="mission-card reveal-card">
+                            <div class="card-icon">🌍</div>
+                            <h3>Community</h3>
+                            <p>Builds lasting connections across batches and departments.</p>
+                        </div>
+
+                        <!-- Card 6: Culture -->
+                        <div class="mission-card reveal-card">
+                            <div class="card-icon">✨</div>
+                            <h3>Culture</h3>
+                            <p>Creates a culture where learning is collaborative and no student feels lost.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Transition Shutter -->
+            <div class="transition-shutter" id="transitionShutter">
+                <div class="shutter-bar"></div>
+            </div>
+        </section>
+
+        <!-- Section: Impact -->
+        <section class="content-section section-alt" id="sectionImpact">
+            <div class="section-inner">
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Resources</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1000+</span>
+                        <span class="stat-label">Students</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Mentors</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section: SWAAS -->
+        <section class="content-section" id="sectionSwaas">
+            <div class="section-inner">
+                <span class="section-tag">02 / THE FORUM</span>
+                <h2 class="section-title">Powered by <span class="highlight">SWAAS</span></h2>
+                <p class="section-desc">
+                    <strong>Student Welfare and Academic Support</strong> — a student-led initiative
+                    bridging the gap between resources and success.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: ISTE -->
+        <section class="content-section section-gold" id="sectionIste">
+            <div class="section-inner">
+                <span class="section-tag">03 / THE LEGACY</span>
+                <h2 class="section-title"><span class="highlight-gold">ISTE</span></h2>
+                <p class="section-desc">
+                    Indian Society for Technical Education — the nation's largest
+                    professional body of engineering educators.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section: CTA -->
+        <section class="content-section section-cta" id="sectionCta">
+            <div class="section-inner">
+                <h2 class="cta-title">Don't prepare alone.<br>Prepare smart.</h2>
+                <div class="cta-buttons">
+                    <a href="/login" class="cta-btn cta-btn--primary">Get Started →</a>
+                    <a href="/dashboard" class="cta-btn cta-btn--secondary">Dashboard</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Particle Burst Effect -->
+    <script src="/landing/js/particle-burst.js"></script>
+    <!-- Shutter Transition Script -->
+    <script src="/landing/js/shutter-transition.js"></script>
+    <!-- Cinematic Animation Script -->
+    <script src="/landing/js/cinematic.js"></script>
+</body>
+
+</html>

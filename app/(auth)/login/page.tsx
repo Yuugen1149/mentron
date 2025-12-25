@@ -11,6 +11,7 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [rememberMe, setRememberMe] = useState(true); // Default to true (Persistent)
     const router = useRouter();
     const supabase = createClient();
 
@@ -24,6 +25,19 @@ export default function LoginPage() {
             setError('Only Gmail accounts are allowed');
             setLoading(false);
             return;
+        }
+
+        // Set Persistence Cookie
+        if (rememberMe) {
+            document.cookie = "mentron-remember-me=true; path=/; max-age=31536000; SameSite=Lax";
+        } else {
+            // Delete cookie or set to false/session
+            // Setting max-age=0 effectively deletes it, but we want the middleware to know "false" logic
+            // Actually, if we delete it, middleware sees undefined and defaults to SESSION (per my middleware logic: !isPersistent)
+            // But wait, my middleware logic says: "if !isPersistent { delete cookieOptions.maxAge }" -> Session Cookie.
+            // So undefined/missing = Session Cookie.
+            // Perfect. So we delete it.
+            document.cookie = "mentron-remember-me=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
 
         try {
@@ -185,76 +199,103 @@ export default function LoginPage() {
                                 </button>
                             </div>
                         </div>
+                </div>
 
-                        {/* Submit Button */}
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-4 rounded-xl font-semibold text-sm uppercase tracking-wide
+                {/* Remember Me & Forgot Password */}
+                <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                        <div className="relative flex items-center">
+                            <input
+                                type="checkbox"
+                                checked={rememberMe}
+                                onChange={(e) => setRememberMe(e.target.checked)}
+                                className="peer sr-only"
+                            />
+                            <div className="w-5 h-5 rounded border border-white/20 bg-white/5 peer-checked:bg-primary-cyan peer-checked:border-primary-cyan transition-all duration-200"></div>
+                            <svg className="absolute w-3.5 h-3.5 text-deep-bg left-0.5 top-0.5 opacity-0 peer-checked:opacity-100 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors select-none">Remember me</span>
+                    </label>
+
+                    <Link
+                        href="/forgot-password"
+                        className="text-sm font-medium text-primary-cyan hover:text-cyan-300 transition-colors"
+                    >
+                        Forgot Password?
+                    </Link>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-4 rounded-xl font-semibold text-sm uppercase tracking-wide
                                        bg-gradient-to-r from-primary-cyan to-cyan-400 text-deep-bg
                                        hover:shadow-lg hover:shadow-primary-cyan/30 hover:scale-[1.02]
                                        focus:outline-none focus:ring-2 focus:ring-primary-cyan/50 focus:ring-offset-2 focus:ring-offset-deep-bg
                                        disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
                                        transition-all duration-200 touch-manipulation"
-                        >
-                            {loading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                    </svg>
-                                    Signing in...
-                                </span>
-                            ) : (
-                                'Sign In'
-                            )}
-                        </button>
-                    </form>
+                >
+                    {loading ? (
+                        <span className="flex items-center justify-center gap-2">
+                            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Signing in...
+                        </span>
+                    ) : (
+                        'Sign In'
+                    )}
+                </button>
+            </form>
 
-                    {/* Divider */}
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-white/10" />
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-4 bg-deep-bg text-text-secondary">New to Mentron?</span>
-                        </div>
-                    </div>
+            {/* Divider */}
+            <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-white/10" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-deep-bg text-text-secondary">New to Mentron?</span>
+                </div>
+            </div>
 
-                    {/* Register Link */}
-                    <Link
-                        href="/register"
-                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl
+            {/* Register Link */}
+            <Link
+                href="/register"
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl
                                    bg-white/5 border border-white/10 text-text-primary
                                    hover:bg-white/10 hover:border-white/20
                                    focus:outline-none focus:ring-2 focus:ring-primary-cyan/30
                                    transition-all duration-200 text-sm font-medium touch-manipulation"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                        </svg>
-                        Register as Student
-                    </Link>
-                </div>
+            >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Register as Student
+            </Link>
+        </div>
 
-                {/* Back to Dashboard Link */}
-                <div className="mt-8 text-center">
-                    <Link
-                        href="/"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
+                {/* Back to Dashboard Link */ }
+    <div className="mt-8 text-center">
+        <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
                                    text-text-secondary hover:text-primary-cyan 
                                    hover:bg-white/5 transition-all duration-200 text-sm"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Back to Dashboard
-                    </Link>
-                </div>
+        >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Dashboard
+        </Link>
+    </div>
 
-                {/* Mobile safe area padding */}
-                <div className="h-8 sm:h-0 mobile-nav-safe" />
-            </div>
-        </main>
+    {/* Mobile safe area padding */ }
+    <div className="h-8 sm:h-0 mobile-nav-safe" />
+            </div >
+        </main >
     );
 }

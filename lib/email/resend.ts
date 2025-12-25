@@ -1,6 +1,18 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization to prevent build-time errors
+let resendClient: Resend | null = null;
+
+function getResendClient(): Resend {
+    if (!resendClient) {
+        const apiKey = process.env.RESEND_API_KEY;
+        if (!apiKey) {
+            throw new Error('RESEND_API_KEY environment variable is not set');
+        }
+        resendClient = new Resend(apiKey);
+    }
+    return resendClient;
+}
 
 export interface AnnouncementEmailData {
     to: string[];
@@ -135,7 +147,7 @@ export async function sendAnnouncementEmail(data: AnnouncementEmailData) {
     `;
 
     try {
-        const result = await resend.emails.send({
+        const result = await getResendClient().emails.send({
             from: `MENTRON <${process.env.RESEND_FROM_EMAIL || 'istesctce@gmail.com'}>`,
             to,
             subject,

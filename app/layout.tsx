@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   title: "Mentron - ISTE SWAS Academic Platform",
   description: "Academic materials management platform for ISTE-SWAS",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/landing/mentron-logo.png",
+    apple: "/landing/mentron-logo.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -46,8 +50,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="apple-touch-icon" href="/icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />

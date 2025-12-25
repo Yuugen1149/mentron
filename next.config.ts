@@ -1,16 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Rewrites for landing page
-  async rewrites() {
-    return [
-      {
-        source: '/',
-        destination: '/landing/index.html',
-      },
-    ];
-  },
-
   // Performance optimizations
   experimental: {
     // Enable optimized package imports for better tree-shaking

@@ -32,35 +32,66 @@ export default async function ChairmanDashboard() {
         .from('group_members')
         .select('*', { count: 'exact', head: true });
 
-    // Calculate Student Growth (Last 7 Days)
+    // Helper to get last 7 days dates
+    const getLast7Days = () => {
+        const dates = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            dates.push(d.toISOString().split('T')[0]);
+        }
+        return dates;
+    };
+    const last7Days = getLast7Days();
+
+    // Helper to process daily counts from records
+    const getDailyCounts = (records: any[] | null) => {
+        const counts = new Array(7).fill(0);
+        records?.forEach(r => {
+            const date = r.created_at.split('T')[0];
+            const index = last7Days.indexOf(date);
+            if (index !== -1) counts[index]++;
+        });
+        return counts; // Returns array like [0, 1, 0, 2, ...]
+    };
+
+    // Calculate Student Growth & Chart
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const { count: newStudents } = await supabase
+
+    // Fetch newly created students (Data, not just count)
+    const { data: newStudentsData, count: newStudentsCount } = await supabase
         .from('group_members')
-        .select('*', { count: 'exact', head: true })
+        .select('created_at', { count: 'exact' })
         .gte('created_at', sevenDaysAgo.toISOString());
+
+    const studentChartData = getDailyCounts(newStudentsData);
 
     const { count: totalAdmins } = await supabase
         .from('admins')
         .select('*', { count: 'exact', head: true })
         .eq('is_active', true);
 
-    // Calculate Admin Growth
-    const { count: newAdmins } = await supabase
+    // Calculate Admin Growth & Chart
+    const { data: newAdminsData, count: newAdminsCount } = await supabase
         .from('admins')
-        .select('*', { count: 'exact', head: true })
+        .select('created_at', { count: 'exact' })
         .eq('is_active', true)
         .gte('created_at', sevenDaysAgo.toISOString());
+
+    const adminChartData = getDailyCounts(newAdminsData);
 
     const { count: totalMaterials } = await supabase
         .from('materials')
         .select('*', { count: 'exact', head: true });
 
-    // Calculate Materials Growth
-    const { count: newMaterials } = await supabase
+    // Calculate Materials Growth & Chart
+    const { data: newMaterialsData, count: newMaterialsCount } = await supabase
         .from('materials')
-        .select('*', { count: 'exact', head: true })
+        .select('created_at', { count: 'exact' })
         .gte('created_at', sevenDaysAgo.toISOString());
+
+    const materialChartData = getDailyCounts(newMaterialsData);
 
     const { data: totalViews } = await supabase
         .from('materials')
@@ -75,9 +106,9 @@ export default async function ChairmanDashboard() {
         return Math.round((newCount / previous) * 100);
     };
 
-    const studentGrowth = calculateGrowth(totalStudents || 0, newStudents || 0);
-    const adminGrowth = calculateGrowth(totalAdmins || 0, newAdmins || 0);
-    const materialGrowth = calculateGrowth(totalMaterials || 0, newMaterials || 0);
+    const studentGrowth = calculateGrowth(totalStudents || 0, newStudentsCount || 0);
+    const adminGrowth = calculateGrowth(totalAdmins || 0, newAdminsCount || 0);
+    const materialGrowth = calculateGrowth(totalMaterials || 0, newMaterialsCount || 0);
 
     // Get all admins for management
     const { data: admins } = await supabase
@@ -85,8 +116,7 @@ export default async function ChairmanDashboard() {
         .select('*')
         .order('created_at', { ascending: false });
 
-    // Mock weekly data for charts (replace with real data later)
-    const mockWeeklyData = [12, 19, 15, 22, 18, 25, 20];
+
 
     // Calculate real department distribution from admins
     const departmentCounts = admins?.reduce((acc, admin) => {
@@ -133,7 +163,7 @@ export default async function ChairmanDashboard() {
                             value={totalStudents || 0}
                             trend={{ percentage: studentGrowth, direction: 'up' }}
                             subtitle="Across all departments"
-                            chartData={mockWeeklyData}
+                            chartData={studentChartData}
                             color="blue"
                             icon={
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,7 +177,7 @@ export default async function ChairmanDashboard() {
                             value={totalAdmins || 0}
                             trend={{ percentage: adminGrowth, direction: 'up' }}
                             subtitle="Execom members"
-                            chartData={[8, 10, 9, 11, 10, 11, 11]}
+                            chartData={adminChartData}
                             color="purple"
                             icon={
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +191,7 @@ export default async function ChairmanDashboard() {
                             value={totalMaterials || 0}
                             trend={{ percentage: materialGrowth, direction: 'up' }}
                             subtitle="All departments"
-                            chartData={[5, 8, 12, 15, 18, 22, 25]}
+                            chartData={materialChartData}
                             color="cyan"
                             icon={
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,7 +206,7 @@ export default async function ChairmanDashboard() {
                             // Trend hidden until view history is implemented
                             trend={undefined}
                             subtitle="Total views"
-                            chartData={[45, 52, 48, 61, 55, 67, 72]}
+                            chartData={[]} // No view history available
                             color="pink"
                             icon={
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

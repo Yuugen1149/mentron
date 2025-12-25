@@ -23,9 +23,55 @@ export default async function ChairmanAnalyticsPage() {
     }
 
     const { count: totalStudents } = await supabase.from('group_members').select('*', { count: 'exact', head: true });
+
+    // Fetch students for department distribution and recent activity
+    const { data: students } = await supabase
+        .from('group_members')
+        .select('created_at, department, year')
+        .order('created_at', { ascending: false });
+
     const { count: totalMaterials } = await supabase.from('materials').select('*', { count: 'exact', head: true });
+
+    // Fetch materials for recent activity
+    const { data: recentMaterials } = await supabase
+        .from('materials')
+        .select('created_at, title, department')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
     const { data: materials } = await supabase.from('materials').select('view_count');
     const totalViews = materials?.reduce((sum, m) => sum + (m.view_count || 0), 0) || 0;
+
+    // Calculate real department distribution
+    const deptCounts = students?.reduce((acc: any, student: any) => {
+        const dept = student.department || 'Unknown';
+        acc[dept] = (acc[dept] || 0) + 1;
+        return acc;
+    }, {}) || {};
+
+    const deptData = [
+        { name: 'ECE', count: deptCounts['ECE'] || 0, color: 'from-blue-500 to-cyan-500' },
+        { name: 'CSE', count: deptCounts['CSE'] || 0, color: 'from-purple-500 to-pink-500' },
+        { name: 'EEE', count: deptCounts['EEE'] || 0, color: 'from-cyan-500 to-blue-500' },
+        { name: 'ME', count: deptCounts['ME'] || 0, color: 'from-pink-500 to-purple-500' },
+        { name: 'CE', count: deptCounts['CE'] || 0, color: 'from-green-500 to-emerald-500' },
+    ].filter(d => d.count > 0 || ['ECE', 'CSE', 'EEE', 'ME'].includes(d.name));
+
+    // Combine and sort recent activity
+    const activity = [
+        ...(students?.slice(0, 5).map(s => ({
+            type: 'student',
+            text: `New student registered - ${s.department} Year ${s.year}`,
+            date: new Date(s.created_at),
+            color: 'bg-green-400'
+        })) || []),
+        ...(recentMaterials?.map(m => ({
+            type: 'material',
+            text: `Material uploaded - ${m.title}`,
+            date: new Date(m.created_at),
+            color: 'bg-blue-400'
+        })) || [])
+    ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 5);
 
     const userName = admin.position || admin.email.split('@')[0];
 
@@ -90,13 +136,15 @@ export default async function ChairmanAnalyticsPage() {
 
                         <div className="glass-card">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-text-secondary text-sm font-medium">Engagement Rate</h3>
+                                <h3 className="text-text-secondary text-sm font-medium">Avg. Views/Material</h3>
                                 <svg className="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                 </svg>
                             </div>
-                            <div className="text-3xl font-bold">87%</div>
-                            <p className="text-text-secondary text-sm mt-2">Active users</p>
+                            <div className="text-3xl font-bold">
+                                {totalMaterials ? Math.round(totalViews / totalMaterials) : 0}
+                            </div>
+                            <p className="text-text-secondary text-sm mt-2">Per uploaded item</p>
                         </div>
                     </div>
 
@@ -105,19 +153,17 @@ export default async function ChairmanAnalyticsPage() {
                         <div className="glass-card">
                             <h3 className="text-xl font-semibold mb-6">Department Distribution</h3>
                             <div className="space-y-4">
-                                {[
-                                    { name: 'ECE', count: 11, color: 'from-blue-500 to-cyan-500' },
-                                    { name: 'CSE', count: 1, color: 'from-purple-500 to-pink-500' },
-                                    { name: 'EEE', count: 0, color: 'from-cyan-500 to-blue-500' },
-                                    { name: 'ME', count: 0, color: 'from-pink-500 to-purple-500' },
-                                ].map((dept) => (
+                                {deptData.map((dept) => (
                                     <div key={dept.name}>
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="text-sm font-medium">{dept.name}</span>
                                             <span className="text-sm text-text-secondary">{dept.count} students</span>
                                         </div>
                                         <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                                            <div className={`h-full bg-gradient-to-r ${dept.color}`} style={{ width: `${(dept.count / 12) * 100}%` }} />
+                                            <div
+                                                className={`h-full bg-gradient-to-r ${dept.color}`}
+                                                style={{ width: `${totalStudents ? (dept.count / totalStudents) * 100 : 0}%` }}
+                                            />
                                         </div>
                                     </div>
                                 ))}
@@ -127,18 +173,17 @@ export default async function ChairmanAnalyticsPage() {
                         <div className="glass-card">
                             <h3 className="text-xl font-semibold mb-6">Recent Activity</h3>
                             <div className="space-y-3">
-                                <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5">
-                                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                    <span className="text-sm">New student registered - ECE Year 2</span>
-                                </div>
-                                <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5">
-                                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                    <span className="text-sm">Material uploaded - Digital Electronics</span>
-                                </div>
-                                <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5">
-                                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                                    <span className="text-sm">Announcement sent to all students</span>
-                                </div>
+                                {activity.length > 0 ? activity.map((item, index) => (
+                                    <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-white/5">
+                                        <div className={`w-2 h-2 ${item.color} rounded-full`}></div>
+                                        <span className="text-sm">{item.text}</span>
+                                        <span className="text-xs text-text-secondary ml-auto">
+                                            {item.date.toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                        </span>
+                                    </div>
+                                )) : (
+                                    <p className="text-text-secondary text-sm">No recent activity</p>
+                                )}
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { AUTH_CONFIG } from '@/lib/config/auth'
 
 export async function middleware(request: NextRequest) {
     let response = NextResponse.next({
@@ -9,7 +10,7 @@ export async function middleware(request: NextRequest) {
     })
 
     // Check for Remember Me preference
-    const rememberMe = request.cookies.get('mentron-remember-me')
+    const rememberMe = request.cookies.get(AUTH_CONFIG.REMEMBER_ME_COOKIE)
     const isPersistent = rememberMe?.value === 'true'
 
     const supabase = createServerClient(

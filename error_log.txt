@@ -1,0 +1,101 @@
+﻿app/api/students/assign/route.ts(94,35): error TS2352: Conversion of type '{ id: any; name: any; department: any; year: any; }[]' to type '{ id: string; name: string; department: string; year: number; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ id: any; name: any; department: any; year: any; }[]' is missing the following properties from type '{ id: string; name: string; department: string; year: number; }': id, name, department, year
+lib/db/operations.test.ts(10,1): error TS2304: Cannot find name 'jest'.
+lib/db/operations.test.ts(12,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(13,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(14,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(15,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(16,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(19,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(20,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(21,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(22,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(26,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(27,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(28,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(31,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(32,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(33,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(37,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(38,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(39,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(40,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(44,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(45,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(48,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(49,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(52,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(54,73): error TS2322: Type '"name"' is not assignable to type '"email"'.
+lib/db/operations.test.ts(55,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(56,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(61,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(65,5): error TS2304: Cannot find name 'beforeEach'.
+lib/db/operations.test.ts(68,19): error TS2304: Cannot find name 'jest'.
+lib/db/operations.test.ts(69,21): error TS2304: Cannot find name 'jest'.
+lib/db/operations.test.ts(70,21): error TS2304: Cannot find name 'jest'.
+lib/db/operations.test.ts(71,21): error TS2304: Cannot find name 'jest'.
+lib/db/operations.test.ts(72,21): error TS2304: Cannot find name 'jest'.
+lib/db/operations.test.ts(73,17): error TS2304: Cannot find name 'jest'.
+lib/db/operations.test.ts(74,20): error TS2304: Cannot find name 'jest'.
+lib/db/operations.test.ts(75,20): error TS2304: Cannot find name 'jest'.
+lib/db/operations.test.ts(76,21): error TS2304: Cannot find name 'jest'.
+lib/db/operations.test.ts(82,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(83,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(92,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(93,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(94,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(95,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(98,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(106,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(107,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(108,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(111,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(119,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(120,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(123,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(131,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(132,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(135,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(143,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(144,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(147,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(152,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(153,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(157,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(158,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(174,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(175,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(176,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(179,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(189,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(190,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(194,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(195,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(208,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(209,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(210,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(214,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(215,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(224,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(225,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(229,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(230,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(243,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(244,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(247,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(262,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(263,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(264,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(265,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(269,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(270,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(278,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(279,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(282,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(290,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(291,13): error TS2304: Cannot find name 'expect'.
+lib/db/operations.test.ts(296,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(298,5): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(299,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(304,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+lib/db/operations.test.ts(308,9): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.

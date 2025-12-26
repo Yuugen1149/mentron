@@ -128,13 +128,14 @@ export async function POST(request: Request) {
                 if (target_year) updateStudentData.year = target_year;
                 if (target_department) updateStudentData.department = target_department;
 
-                const { count } = await supabase
+                const { data } = await supabase
                     .from('group_members')
                     .update(updateStudentData)
                     .eq('group_id', group.id)
-                    .select('*', { count: 'exact', head: true });
+                    .eq('group_id', group.id)
+                    .select('id');
 
-                studentsMoved = count || 0;
+                studentsMoved = data?.length || 0;
             }
 
             // Create audit log entry

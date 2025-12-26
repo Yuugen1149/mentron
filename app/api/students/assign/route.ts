@@ -91,7 +91,8 @@ export async function POST(request: Request) {
         // Create audit log entries
         if (currentStudents && currentStudents.length > 0) {
             const auditEntries = currentStudents.map(student => {
-                const fromGroup = student.group as { id: string; name: string; department: string; year: number } | null;
+                const groupData = student.group;
+                const fromGroup = (Array.isArray(groupData) ? groupData[0] : groupData) as { id: string; name: string; department: string; year: number } | null;
                 return {
                     student_id: student.id,
                     student_email: student.email,

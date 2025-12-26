@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 interface NavItem {
     id: string;
@@ -18,6 +18,23 @@ interface NavigationDockProps {
 
 export function NavigationDock({ userRole }: NavigationDockProps) {
     const pathname = usePathname();
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        const fetchCount = async () => {
+            try {
+                const response = await fetch('/api/notifications');
+                const data = await response.json();
+                setUnreadCount(data.unreadCount || 0);
+            } catch (error) {
+                console.error('Failed to fetch notification count:', error);
+            }
+        };
+
+        fetchCount();
+        const interval = setInterval(fetchCount, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const { navItems, bottomItems, allItems } = useMemo(() => {
         const commonItems: NavItem[] = [
@@ -158,7 +175,7 @@ export function NavigationDock({ userRole }: NavigationDockProps) {
                     </svg>
                 ),
                 href: `/${userRole}/notifications`,
-                badge: 3,
+                badge: unreadCount > 0 ? unreadCount : undefined,
             },
             {
                 id: 'settings',
@@ -181,7 +198,7 @@ export function NavigationDock({ userRole }: NavigationDockProps) {
             bottomItems: bottom,
             allItems: [...topItems, ...bottom]
         };
-    }, [userRole]);
+    }, [userRole, unreadCount]);
 
     const activeId = useMemo(() => {
         let bestMatch = null;

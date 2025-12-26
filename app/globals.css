@@ -2,19 +2,29 @@
 @import "tailwindcss";
 
 :root {
-  /* Color Palette - ISTE-SWAS Theme */
-  --deep-bg: #030305;
-  --primary-cyan: #00C6FF;
-  --secondary-purple: #7000DF;
-  --accent-pink: #FF0055;
-  --text-primary: #FFFFFF;
-  --text-secondary: #8B9BB4;
+  /* ========================= */
+  /* LIGHT MODE (Default)      */
+  /* ========================= */
 
-  /* Glass Effect Colors */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --nav-bg: rgba(10, 10, 15, 0.6);
-  --nav-border: rgba(255, 255, 255, 0.1);
+  /* Color Palette - Light Theme */
+  --deep-bg: #F0F4F8;
+  /* Light grayish blue background */
+  --primary-cyan: #00A3D6;
+  /* Slightly darker cyan for contrast on white */
+  --secondary-purple: #6000C0;
+  /* Slightly darker purple */
+  --accent-pink: #E6004C;
+  /* Slightly darker pink */
+  --text-primary: #1A202C;
+  /* Dark slate for primary text */
+  --text-secondary: #4A5568;
+  /* Medium slate for secondary text */
+
+  /* Glass Effect Colors - Light */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --nav-bg: rgba(255, 255, 255, 0.85);
+  --nav-border: rgba(200, 200, 200, 0.3);
 
   /* Spacing Scale */
   --spacing-xs: 8px;
@@ -35,7 +45,31 @@
   --font-heading: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
 
-  /* Shadows */
+  /* Shadows - Light */
+  --shadow-glow: 0 0 40px rgba(0, 163, 214, 0.2);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-button: 0 4px 12px rgba(0, 163, 214, 0.25);
+}
+
+/* ========================= */
+/* DARK MODE                 */
+/* ========================= */
+.dark {
+  /* Color Palette - ISTE-SWAS Theme (Original) */
+  --deep-bg: #030305;
+  --primary-cyan: #00C6FF;
+  --secondary-purple: #7000DF;
+  --accent-pink: #FF0055;
+  --text-primary: #FFFFFF;
+  --text-secondary: #8B9BB4;
+
+  /* Glass Effect Colors - Dark */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --nav-bg: rgba(10, 10, 15, 0.6);
+  --nav-border: rgba(255, 255, 255, 0.1);
+
+  /* Shadows - Dark */
   --shadow-glow: 0 0 80px rgba(0, 198, 255, 0.3);
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
   --shadow-button: 0 4px 16px rgba(0, 198, 255, 0.4);

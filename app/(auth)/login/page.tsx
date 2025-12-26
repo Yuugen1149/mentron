@@ -5,15 +5,17 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { AUTH_CONFIG } from '@/lib/config/auth';
+import { useToast } from '@/lib/context/ToastContext';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState('');
+    // const [error, setError] = useState(''); // Removed local error state
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const supabase = createClient();
+    const { showToast } = useToast();
 
     // Redirect if already logged in (Fixes Back button showing Login page)
     useEffect(() => {
@@ -29,12 +31,12 @@ export default function LoginPage() {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
+        // setError('');
         setLoading(true);
 
         // Validate Gmail only
         if (!email.endsWith('@gmail.com')) {
-            setError('Only Gmail accounts are allowed');
+            showToast('Only Gmail accounts are allowed');
             setLoading(false);
             return;
         }
@@ -58,7 +60,7 @@ export default function LoginPage() {
                 if (adminData) {
                     if (!adminData.is_active) {
                         await supabase.auth.signOut();
-                        setError('Your account has been deactivated. Please contact the chairman.');
+                        showToast('Your account has been deactivated. Please contact the chairman.');
                         setLoading(false);
                         return;
                     }
@@ -80,13 +82,13 @@ export default function LoginPage() {
                         router.replace('/student');
                     } else {
                         await supabase.auth.signOut();
-                        setError('User profile not found. Please contact support.');
+                        showToast('User profile not found. Please contact support.');
                         setLoading(false);
                     }
                 }
             }
         } catch (err: any) {
-            setError(err.message || 'Failed to sign in');
+            showToast(err.message || 'Failed to sign in');
             setLoading(false);
         }
     };
@@ -118,15 +120,6 @@ export default function LoginPage() {
                 {/* Login Card */}
                 <div className="glass-card fade-in p-6 sm:p-8">
                     <form onSubmit={handleLogin} className="space-y-5">
-                        {/* Error Alert */}
-                        {error && (
-                            <div className="flex items-start gap-3 p-4 rounded-xl bg-accent-pink/10 border border-accent-pink/20">
-                                <svg className="w-5 h-5 text-accent-pink flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <p className="text-accent-pink text-sm">{error}</p>
-                            </div>
-                        )}
 
                         {/* Email Field */}
                         <div className="space-y-2">

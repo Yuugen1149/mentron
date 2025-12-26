@@ -116,23 +116,28 @@ export default async function ChairmanDashboard() {
         .select('*')
         .order('created_at', { ascending: false });
 
+    // Fetch all students (minimal data) for Department Distribution
+    const { data: allStudents } = await supabase
+        .from('group_members')
+        .select('department');
 
 
-    // Calculate real department distribution from admins
-    const departmentCounts = admins?.reduce((acc, admin) => {
-        const dept = admin.department || 'Unknown';
+
+    // Calculate real department distribution from STUDENTS (not admins)
+    const departmentCounts = allStudents?.reduce((acc, student) => {
+        const dept = student.department || 'Unknown';
         acc[dept] = (acc[dept] || 0) + 1;
         return acc;
     }, {} as Record<string, number>) || {};
 
-    const totalAdminCount = admins?.length || 1;
+    const totalCalculatedStudents = allStudents?.length || 1;
     const departmentData = [
         { name: 'ECE', count: departmentCounts['ECE'] || 0, color: 'from-blue-500 to-cyan-500' },
         { name: 'CSE', count: departmentCounts['CSE'] || 0, color: 'from-purple-500 to-pink-500' },
         { name: 'EEE', count: departmentCounts['EEE'] || 0, color: 'from-cyan-500 to-blue-500' },
         { name: 'ME', count: departmentCounts['ME'] || 0, color: 'from-pink-500 to-purple-500' },
         { name: 'CE', count: departmentCounts['CE'] || 0, color: 'from-green-500 to-emerald-500' },
-    ].filter(d => d.count > 0 || ['ECE', 'CSE', 'EEE', 'ME'].includes(d.name));
+    ].filter(d => d.count > 0); // Hide empty departments
 
     // Extract user name from email
     const userName = admin.position || admin.email.split('@')[0];
@@ -281,18 +286,18 @@ export default async function ChairmanDashboard() {
                             <div className="glass-card">
                                 <h3 className="text-base sm:text-lg font-semibold mb-4">Department Distribution</h3>
                                 <div className="space-y-4">
-                                    {departmentData.map((dept) => {
-                                        const percentage = totalAdminCount > 0 ? (dept.count / totalAdminCount) * 100 : 0;
+                                    {departmentData.filter(d => d.count > 0).map((dept) => {
+                                        const percentage = totalCalculatedStudents > 0 ? (dept.count / totalCalculatedStudents) * 100 : 0;
                                         return (
                                             <div key={dept.name}>
                                                 <div className="flex items-center justify-between mb-2">
                                                     <span className="text-sm font-medium">{dept.name}</span>
-                                                    <span className="text-sm text-text-secondary">{dept.count} admin{dept.count !== 1 ? 's' : ''}</span>
+                                                    <span className="text-sm text-text-secondary">{dept.count} student{dept.count !== 1 ? 's' : ''}</span>
                                                 </div>
                                                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                                                     <div
                                                         className={`h-full bg-gradient-to-r ${dept.color} transition-all duration-500`}
-                                                        style={{ width: `${Math.max(percentage, 2)}%` }}
+                                                        style={{ width: `${percentage}%` }}
                                                     />
                                                 </div>
                                             </div>

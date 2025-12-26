@@ -1,8 +1,12 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { StatCard } from '@/components/StatCard';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { AnalyticsWidget } from '@/components/ui/AnalyticsWidget';
+
+import { getLast7DaysCounts } from '@/lib/utils/analytics';
 
 export default async function ExecomDashboard() {
     const supabase = await createClient();
@@ -24,23 +28,41 @@ export default async function ExecomDashboard() {
         redirect('/login');
     }
 
-    // Get students in admin's department
-    const { data: students } = await supabase
-        .from('group_members')
-        .select('*')
-        .eq('department', admin.department)
-        .order('year', { ascending: true });
+    // Parallel fetching for optimized loading
+    const [studentsResult, materialsResult, allMaterialsResult] = await Promise.all([
+        // Get students in admin's department
+        supabase
+            .from('group_members')
+            .select('created_at')
+            .eq('department', admin.department)
+            .order('year', { ascending: true }),
 
-    // Get materials uploaded by this admin
-    const { data: materials } = await supabase
-        .from('materials')
-        .select('*')
-        .eq('department', admin.department)
-        .order('created_at', { ascending: false })
-        .limit(10);
+        // Get recent materials
+        supabase
+            .from('materials')
+            .select('*')
+            .eq('department', admin.department)
+            .order('created_at', { ascending: false })
+            .limit(10),
 
-    // Mock data for charts
-    const mockWeeklyData = [3, 5, 4, 7, 6, 8, 7];
+        // Get all materials for analytics
+        supabase
+            .from('materials')
+            .select('view_count, created_at')
+            .eq('department', admin.department)
+    ]);
+
+    const students = studentsResult.data || [];
+    const materials = materialsResult.data || [];
+    const allMaterials = allMaterialsResult.data || [];
+
+    const totalViews = allMaterials.reduce((sum, m) => sum + (m.view_count || 0), 0);
+    const materialCount = allMaterials.length;
+
+    // Calculate real chart data using last 7 days
+    const studentChartData = getLast7DaysCounts(students);
+    const materialChartData = getLast7DaysCounts(allMaterials);
+
 
     const userName = admin.position || admin.email.split('@')[0];
 
@@ -67,10 +89,10 @@ export default async function ExecomDashboard() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                         <StatCard
                             title="Students"
-                            value={students?.length || 0}
-                            trend={{ percentage: 5, direction: 'up' }}
+                            value={students.length}
+                            trend={{ percentage: 0, direction: 'neutral' }} // Reset trend as we don't have historical snapshots
                             subtitle="In your department"
-                            chartData={mockWeeklyData}
+                            chartData={studentChartData}
                             color="blue"
                             icon={
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,10 +103,10 @@ export default async function ExecomDashboard() {
 
                         <StatCard
                             title="Materials"
-                            value={materials?.length || 0}
-                            trend={{ percentage: 12, direction: 'up' }}
+                            value={materialCount}
+                            trend={{ percentage: 0, direction: 'neutral' }}
                             subtitle="Uploaded by you"
-                            chartData={[2, 3, 4, 5, 6, 8, 10]}
+                            chartData={materialChartData}
                             color="purple"
                             icon={
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,28 +130,42 @@ export default async function ExecomDashboard() {
                         />
                     </div>
 
+
+
+                    {/* Performance Analytics Widget */}
+                    <div className="mb-6 sm:mb-8 flex justify-center sm:justify-start">
+                        <AnalyticsWidget
+                            title="Department Performance"
+                            viewCount={totalViews}
+                            viewGrowth="Live Data"
+                            secondaryMetricLabel="Avg. Views"
+                            secondaryMetricValue={materialCount ? Math.round(totalViews / materialCount) : 0}
+                            secondaryMetricGrowth="Real-time"
+                        />
+                    </div>
+
                     {/* Quick Actions */}
                     <div className="glass-card mb-6 sm:mb-8">
                         <h2 className="text-xl sm:text-2xl font-bold mb-4">Quick Actions</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                            <button className="btn btn-primary text-sm justify-center touch-manipulation">
+                            <Link href="/execom/upload" className="btn btn-primary text-sm justify-center touch-manipulation">
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                 </svg>
                                 Upload Material
-                            </button>
-                            <button className="btn btn-secondary text-sm justify-center touch-manipulation">
+                            </Link>
+                            <Link href="/execom/students" className="btn btn-secondary text-sm justify-center touch-manipulation">
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
                                 View Students
-                            </button>
-                            <button className="btn btn-secondary text-sm justify-center touch-manipulation">
+                            </Link>
+                            <Link href="/execom/notifications" className="btn btn-secondary text-sm justify-center touch-manipulation">
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                 </svg>
                                 Send Message
-                            </button>
+                            </Link>
                         </div>
                     </div>
 
@@ -180,9 +216,9 @@ export default async function ExecomDashboard() {
                             <p className="text-text-secondary text-sm sm:text-base mb-4">
                                 Upload your first study material to get started.
                             </p>
-                            <button className="btn btn-primary text-sm touch-manipulation">
+                            <Link href="/execom/upload" className="btn btn-primary text-sm touch-manipulation">
                                 Upload Material
-                            </button>
+                            </Link>
                         </div>
                     )}
 

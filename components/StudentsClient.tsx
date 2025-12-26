@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useId } from 'react';
-import { DndContext, DragOverlay, closestCenter, DragEndEvent, DragStartEvent } from '@dnd-kit/core';
+import { DndContext, DragOverlay, closestCenter, DragEndEvent, DragStartEvent, useSensor, useSensors, PointerSensor, TouchSensor, MouseSensor } from '@dnd-kit/core';
 import { CreateGroupModal } from '@/components/CreateGroupModal';
 import { GroupCard } from '@/components/GroupCard';
 import { StudentCard } from '@/components/StudentCard';
@@ -250,10 +250,26 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
     // Only Chairman and Vice Chair can see/use delete button
     const canDeleteStudents = userRole === 'chairman' || userPosition === 'Vice Chair';
 
+    // Configure sensors for mobile touch support
+    const sensors = useSensors(
+        useSensor(MouseSensor, {
+            activationConstraint: {
+                distance: 10,
+            },
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 250,
+                tolerance: 5,
+            },
+        })
+    );
+
     return (
         <>
             <DndContext
                 id={dndId}
+                sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}

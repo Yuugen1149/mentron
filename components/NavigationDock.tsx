@@ -296,7 +296,7 @@ function MobileNavigation({
 
             {/* More Menu Popup */}
             <div
-                className={`fixed bottom-20 left-4 right-4 bg-[#0A0A0F]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-4 grid grid-cols-4 gap-4 z-50 lg:hidden transition-all duration-300 origin-bottom ${showMore ? 'scale-100 opacity-100 translate-y-0' : 'scale-95 opacity-0 translate-y-4 pointer-events-none'
+                className={`fixed bottom-20 left-4 right-4 bg-[#0A0A0F]/95 backdrop-blur-xl border border-white/10 rounded-2xl p-4 grid grid-cols-4 gap-4 z-[60] lg:hidden transition-all duration-300 origin-bottom ${showMore ? 'scale-100 opacity-100 translate-y-0' : 'scale-95 opacity-0 translate-y-4 pointer-events-none'
                     }`}
             >
                 {otherItems.map((item) => {

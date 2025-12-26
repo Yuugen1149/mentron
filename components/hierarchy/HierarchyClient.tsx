@@ -88,7 +88,7 @@ export function HierarchyClient({ userRole, userDepartment }: HierarchyClientPro
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
                         Student Hierarchy

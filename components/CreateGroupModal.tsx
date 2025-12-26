@@ -7,10 +7,8 @@ interface CreateGroupModalProps {
     onClose: () => void;
     onSuccess: () => void;
     userDepartment: string;
-    userRole: 'execom' | 'chairman';
 }
 
-const DEPARTMENTS = ['ECE', 'CSE', 'EEE', 'ME'];
 const COLORS = [
     { name: 'Cyan', value: '#06b6d4' },
     { name: 'Purple', value: '#a855f7' },
@@ -22,9 +20,8 @@ const COLORS = [
     { name: 'Yellow', value: '#eab308' },
 ];
 
-export function CreateGroupModal({ isOpen, onClose, onSuccess, userDepartment, userRole }: CreateGroupModalProps) {
+export function CreateGroupModal({ isOpen, onClose, onSuccess, userDepartment }: CreateGroupModalProps) {
     const [name, setName] = useState('');
-    const [department, setDepartment] = useState(userDepartment);
     const [year, setYear] = useState<number | ''>('');
     const [description, setDescription] = useState('');
     const [color, setColor] = useState('#06b6d4');
@@ -44,7 +41,7 @@ export function CreateGroupModal({ isOpen, onClose, onSuccess, userDepartment, u
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name,
-                    department,
+                    department: userDepartment,
                     year: year || null,
                     description,
                     color
@@ -103,29 +100,6 @@ export function CreateGroupModal({ isOpen, onClose, onSuccess, userDepartment, u
                         />
                     </div>
 
-                    {/* Department */}
-                    <div>
-                        <label className="block text-sm font-medium mb-2">
-                            Department <span className="text-accent-pink">*</span>
-                        </label>
-                        <select
-                            value={department}
-                            onChange={(e) => setDepartment(e.target.value)}
-                            disabled={userRole === 'execom'}
-                            required
-                            className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-primary-cyan focus:outline-none focus:ring-2 focus:ring-primary-cyan/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {DEPARTMENTS.map(dept => (
-                                <option key={dept} value={dept}>{dept}</option>
-                            ))}
-                        </select>
-                        {userRole === 'execom' && (
-                            <p className="text-xs text-text-secondary mt-1">
-                                You can only create groups in your department
-                            </p>
-                        )}
-                    </div>
-
                     {/* Year (Optional) */}
                     <div>
                         <label className="block text-sm font-medium mb-2">
@@ -170,8 +144,8 @@ export function CreateGroupModal({ isOpen, onClose, onSuccess, userDepartment, u
                                     type="button"
                                     onClick={() => setColor(c.value)}
                                     className={`h-10 rounded-lg transition-all ${color === c.value
-                                            ? 'ring-2 ring-white ring-offset-2 ring-offset-background scale-110'
-                                            : 'hover:scale-105'
+                                        ? 'ring-2 ring-white ring-offset-2 ring-offset-background scale-110'
+                                        : 'hover:scale-105'
                                         }`}
                                     style={{ backgroundColor: c.value }}
                                     title={c.name}

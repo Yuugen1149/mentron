@@ -1,11 +1,21 @@
 /* From Uiverse.io by rishichawda */
 /* The switch - the box around the slider */
 .themeToggleButton {
-    font-size: 17px;
+    font-size: 12px;
     position: relative;
     display: inline-block;
     width: 7em;
+    height: auto;
     cursor: pointer;
+    flex-shrink: 0;
+    /* Extra safety */
+}
+
+/* Ensure SVG fills the container */
+.themeToggleButton svg {
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 /* Hide default HTML checkbox */

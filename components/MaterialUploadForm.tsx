@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { DEPARTMENTS, ACADEMIC_YEARS } from '@/lib/constants';
 
 interface MaterialUploadFormProps {
     userRole: 'chairman' | 'execom';
@@ -172,11 +173,11 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
                             className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary-cyan focus:outline-none focus:ring-2 focus:ring-primary-cyan/20 transition-all"
                         >
                             <option value="">Select Department</option>
-                            <option value="CSE">Computer Science</option>
-                            <option value="ECE">Electronics & Communication</option>
-                            <option value="EEE">Electrical & Electronics</option>
-                            <option value="ME">Mechanical Engineering</option>
-                            <option value="CE">Civil Engineering</option>
+                            {DEPARTMENTS.map((dept) => (
+                                <option key={dept.code} value={dept.code}>
+                                    {dept.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <div>
@@ -190,10 +191,11 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
                             className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary-cyan focus:outline-none focus:ring-2 focus:ring-primary-cyan/20 transition-all"
                         >
                             <option value="">Select Year</option>
-                            <option value="1">1st Year</option>
-                            <option value="2">2nd Year</option>
-                            <option value="3">3rd Year</option>
-                            <option value="4">4th Year</option>
+                            {ACADEMIC_YEARS.map((yr) => (
+                                <option key={yr.value} value={yr.value}>
+                                    {yr.label}
+                                </option>
+                            ))}
                         </select>
                     </div>
                 </div>

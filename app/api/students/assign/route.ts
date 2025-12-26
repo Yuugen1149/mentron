@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
-// POST - Assign/reassign students to groups
+// POST - Assign/reassign students to groups with audit logging
 export async function POST(request: Request) {
     try {
         const supabase = await createClient();
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const { studentIds, groupId } = body;
+        const { studentIds, groupId, reason } = body;
 
         if (!studentIds || !Array.isArray(studentIds) || studentIds.length === 0) {
             return NextResponse.json(
@@ -32,7 +32,8 @@ export async function POST(request: Request) {
             );
         }
 
-        // If groupId is provided, verify the group exists and admin has permission
+        // Fetch target group info if provided
+        let targetGroup = null;
         if (groupId) {
             const { data: group } = await supabase
                 .from('groups')
@@ -51,23 +52,86 @@ export async function POST(request: Request) {
                     { status: 403 }
                 );
             }
+
+            targetGroup = group;
         }
 
+        // Fetch current student info for audit log
+        const { data: currentStudents } = await supabase
+            .from('group_members')
+            .select(`
+                id,
+                email,
+                year,
+                department,
+                group_id,
+                group:groups(id, name, department, year)
+            `)
+            .in('id', studentIds);
+
         // Update the students' group_id
+        const updateData: Record<string, unknown> = { group_id: groupId || null };
+
+        // Also update department and year if assigning to a specific group
+        if (targetGroup) {
+            updateData.department = targetGroup.department;
+            if (targetGroup.year) {
+                updateData.year = targetGroup.year;
+            }
+        }
+
         const { data: updatedStudents, error } = await supabase
             .from('group_members')
-            .update({ group_id: groupId })
+            .update(updateData)
             .in('id', studentIds)
             .select();
 
         if (error) throw error;
 
+        // Create audit log entries
+        if (currentStudents && currentStudents.length > 0) {
+            const auditEntries = currentStudents.map(student => {
+                const fromGroup = student.group as { id: string; name: string; department: string; year: number } | null;
+                return {
+                    student_id: student.id,
+                    student_email: student.email,
+                    from_group_id: student.group_id,
+                    from_group_name: fromGroup?.name || null,
+                    from_year: student.year,
+                    from_department: student.department,
+                    to_group_id: groupId || null,
+                    to_group_name: targetGroup?.name || null,
+                    to_year: targetGroup?.year || student.year,
+                    to_department: targetGroup?.department || student.department,
+                    assigned_by: user.id,
+                    assigned_by_email: admin.email,
+                    reason: reason || null
+                };
+            });
+
+            // Insert audit logs (don't fail the request if this fails)
+            const { error: auditError } = await supabase
+                .from('student_assignments')
+                .insert(auditEntries);
+
+            if (auditError) {
+                console.error('Error creating audit logs:', auditError);
+            }
+        }
+
         return NextResponse.json({
             message: `Successfully ${groupId ? 'assigned' : 'unassigned'} ${updatedStudents?.length || 0} student(s)`,
-            students: updatedStudents
+            students: updatedStudents,
+            assignedTo: targetGroup ? {
+                id: targetGroup.id,
+                name: targetGroup.name,
+                department: targetGroup.department,
+                year: targetGroup.year
+            } : null
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error assigning students:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }

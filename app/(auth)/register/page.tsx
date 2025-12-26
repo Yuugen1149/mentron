@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { DEPARTMENTS, ACADEMIC_YEARS } from '@/lib/constants';
 
 export default function RegisterPage() {
     const [name, setName] = useState('');
@@ -18,9 +19,6 @@ export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const supabase = createClient();
-
-    const departments = ['CSE', 'ECE', 'EEE', 'ME', 'CE'];
-    const years = [1, 2, 3, 4];
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -243,9 +241,9 @@ export default function RegisterPage() {
                                                    transition-all duration-200"
                                     >
                                         <option value="" className="bg-deep-bg">Select</option>
-                                        {departments.map((dept) => (
-                                            <option key={dept} value={dept} className="bg-deep-bg">
-                                                {dept}
+                                        {DEPARTMENTS.map((dept) => (
+                                            <option key={dept.code} value={dept.code} className="bg-deep-bg">
+                                                {dept.name}
                                             </option>
                                         ))}
                                     </select>
@@ -273,9 +271,9 @@ export default function RegisterPage() {
                                                    transition-all duration-200"
                                     >
                                         <option value="" className="bg-deep-bg">Select</option>
-                                        {years.map((yr) => (
-                                            <option key={yr} value={yr} className="bg-deep-bg">
-                                                Year {yr}
+                                        {ACADEMIC_YEARS.map((yr) => (
+                                            <option key={yr.value} value={yr.value} className="bg-deep-bg">
+                                                {yr.label}
                                             </option>
                                         ))}
                                     </select>

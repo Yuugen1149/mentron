@@ -32,6 +32,28 @@ export default function ChairmanNotificationsPage() {
         }
     };
 
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this announcement? This action is irreversible.')) {
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/announcements/${id}`, {
+                method: 'DELETE',
+            });
+
+            if (res.ok) {
+                setAnnouncementsList(prev => prev.filter(item => item.id !== id));
+                setFeedback({ type: 'success', message: 'Announcement deleted successfully' });
+            } else {
+                setFeedback({ type: 'error', message: 'Failed to delete announcement' });
+            }
+        } catch (error) {
+            console.error('Delete failed', error);
+            setFeedback({ type: 'error', message: 'Delete failed' });
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -173,10 +195,21 @@ export default function ChairmanNotificationsPage() {
                                         }`}>
                                         <div className="flex items-start justify-between mb-2">
                                             <h4 className="font-semibold">{item.title}</h4>
-                                            {item.priority !== 'normal' && (
-                                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${item.priority === 'urgent' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400'
-                                                    }`}>{item.priority.toUpperCase()}</span>
-                                            )}
+                                            <div className="flex items-center gap-2">
+                                                {item.priority !== 'normal' && (
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${item.priority === 'urgent' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400'
+                                                        }`}>{item.priority.toUpperCase()}</span>
+                                                )}
+                                                <button
+                                                    onClick={() => handleDelete(item.id)}
+                                                    className="p-1 hover:text-red-500 text-text-secondary transition-colors"
+                                                    title="Delete Announcement"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                         <p className="text-text-secondary text-sm mb-2">{item.message}</p>
                                         <div className="flex items-center gap-4 text-xs text-text-secondary">

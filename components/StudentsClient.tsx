@@ -588,7 +588,6 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                 onClose={() => setIsModalOpen(false)}
                 onSuccess={refreshData}
                 userDepartment={userDepartment}
-                userRole={userRole}
             />
         </>
     );

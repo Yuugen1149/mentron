@@ -7,13 +7,17 @@ export function ThemeToggle() {
     const [isDark, setIsDark] = useState(false);
 
     useEffect(() => {
-        // Check local storage or system preference
-        const savedTheme = localStorage.getItem('theme');
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        try {
+            // Check local storage or system preference
+            const savedTheme = typeof window !== 'undefined' ? localStorage.getItem('theme') : null;
+            const systemDark = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : false;
 
-        if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
-            setIsDark(true);
-            document.documentElement.classList.add('dark');
+            if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                setIsDark(true);
+                document.documentElement.classList.add('dark');
+            }
+        } catch (e) {
+            console.error('Theme detection failed', e);
         }
     }, []);
 

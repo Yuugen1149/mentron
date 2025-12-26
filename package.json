@@ -27,6 +27,7 @@
     "react-dom": "19.2.3",
     "recharts": "^3.6.0",
     "resend": "^6.6.0",
+    "styled-components": "^6.1.19",
     "three": "^0.182.0"
   },
   "devDependencies": {

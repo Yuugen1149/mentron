@@ -257,7 +257,6 @@ export function HierarchyClient({ userRole, userDepartment }: HierarchyClientPro
                 onClose={() => setShowCreateModal(false)}
                 onGroupCreated={handleGroupCreated}
                 preSelectedYear={selectedYearNumber}
-                preSelectedDepartment={selectedDeptCode || userDepartment}
             />
         </div>
     );

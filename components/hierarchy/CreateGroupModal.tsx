@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DEPARTMENTS, ACADEMIC_YEARS } from '@/lib/constants';
+import { ACADEMIC_YEARS } from '@/lib/constants';
 
 interface AcademicYear {
     id: string;
@@ -9,19 +9,11 @@ interface AcademicYear {
     year_number: number;
 }
 
-interface Department {
-    id: string;
-    code: string;
-    name: string;
-    color: string;
-}
-
 interface CreateGroupModalProps {
     isOpen: boolean;
     onClose: () => void;
     onGroupCreated: () => void;
     preSelectedYear?: number | null;
-    preSelectedDepartment?: string | null;
 }
 
 const GROUP_COLORS = [
@@ -33,8 +25,7 @@ export function CreateGroupModal({
     isOpen,
     onClose,
     onGroupCreated,
-    preSelectedYear,
-    preSelectedDepartment
+    preSelectedYear
 }: CreateGroupModalProps) {
     // Use constants directly instead of API (ensures official departments are always shown)
     const [years] = useState<AcademicYear[]>(
@@ -44,18 +35,9 @@ export function CreateGroupModal({
             year_number: y.value
         }))
     );
-    const [departments] = useState<Department[]>(
-        DEPARTMENTS.map(d => ({
-            id: d.code,
-            code: d.code,
-            name: d.name,
-            color: d.color
-        }))
-    );
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [selectedYear, setSelectedYear] = useState<number | null>(preSelectedYear || null);
-    const [selectedDepartment, setSelectedDepartment] = useState<string | null>(preSelectedDepartment || null);
     const [color, setColor] = useState(GROUP_COLORS[0]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -64,9 +46,8 @@ export function CreateGroupModal({
         if (isOpen) {
             // Reset form or use pre-selected values
             if (preSelectedYear) setSelectedYear(preSelectedYear);
-            if (preSelectedDepartment) setSelectedDepartment(preSelectedDepartment);
         }
-    }, [isOpen, preSelectedYear, preSelectedDepartment]);
+    }, [isOpen, preSelectedYear]);
 
 
     async function handleCreate() {

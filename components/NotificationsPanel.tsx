@@ -58,10 +58,7 @@ export function NotificationsPanel({ userRole }: NotificationsPanelProps) {
 
     const markAllAsRead = async () => {
         try {
-            const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
-            await Promise.all(
-                unreadIds.map(id => fetch(`/api/notifications/mark-read/${id}`, { method: 'POST' }))
-            );
+            await fetch('/api/notifications/mark-all-read', { method: 'POST' });
             setNotifications(notifications.map(n => ({ ...n, read: true })));
             setUnreadCount(0);
         } catch (error) {

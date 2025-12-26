@@ -15,6 +15,7 @@ export async function GET() {
             .from('notifications')
             .select('*')
             .eq('user_id', user.id)
+            .order('read', { ascending: true })
             .order('created_at', { ascending: false })
             .limit(50);
 

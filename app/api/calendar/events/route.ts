@@ -80,7 +80,39 @@ export async function POST(request: Request) {
         if (error) throw error;
 
         // Create notifications for relevant users
-        // TODO: Implement notification creation based on department/year
+        // Query students based on department and year
+        let studentQuery = supabase
+            .from('group_members')
+            .select('id');
+
+        if (department) {
+            studentQuery = studentQuery.eq('department', department);
+        }
+        if (year) {
+            studentQuery = studentQuery.eq('year', year);
+        }
+
+        const { data: targetStudents } = await studentQuery;
+
+        if (targetStudents && targetStudents.length > 0) {
+            const notifications = targetStudents.map(student => ({
+                user_id: student.id,
+                type: 'event',
+                title: 'New Event Scheduled',
+                message: `Event Scheduled: ${title} on ${event_date}`,
+                read: false,
+                created_at: new Date().toISOString(),
+                // Optional: valid link to calendar? action_url: '/calendar'
+            }));
+
+            const { error: notifyError } = await supabase
+                .from('notifications')
+                .insert(notifications);
+
+            if (notifyError) {
+                console.error('Failed to create notifications:', notifyError);
+            }
+        }
 
         return NextResponse.json({ event }, { status: 201 });
     } catch (error: any) {

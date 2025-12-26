@@ -20,7 +20,13 @@ export async function GET() {
 
         if (error) throw error;
 
-        const unreadCount = notifications?.filter(n => !n.read).length || 0;
+        const { count: unreadCount, error: countError } = await supabase
+            .from('notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', user.id)
+            .eq('read', false);
+
+        if (countError) console.error('Error fetching unread count:', countError);
 
         return NextResponse.json({ notifications, unreadCount });
     } catch (error: any) {

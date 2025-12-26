@@ -138,11 +138,13 @@ export function CalendarWidget({ userRole, onEventClick }: CalendarWidgetProps) 
                                     setShowEventModal(true);
                                 }
                             }}
-                            className={`aspect-square p-1 rounded-lg text-xs transition-all relative ${isToday
-                                    ? 'bg-primary-cyan text-background font-bold'
+                            className={`aspect-square p-1 rounded-lg text-xs transition-all relative group ${isToday
+                                ? 'bg-primary-cyan text-background font-bold shadow-lg shadow-primary-cyan/20'
+                                : dayEvents.length > 0
+                                    ? 'bg-white/10 text-white font-medium border border-white/10 hover:bg-white/20 hover:border-primary-cyan/50'
                                     : isCurrentMonth
-                                        ? 'hover:bg-white/10'
-                                        : 'text-text-secondary/50'
+                                        ? 'text-text-primary hover:bg-white/5'
+                                        : 'text-text-secondary/30'
                                 }`}
                         >
                             <span>{format(day, 'd')}</span>

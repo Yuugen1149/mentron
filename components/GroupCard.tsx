@@ -29,9 +29,10 @@ interface GroupCardProps {
     students: Student[];
     onDelete?: (groupId: string) => void;
     isOver?: boolean;
+    onReassignStudent?: (student: Student) => void;
 }
 
-export function GroupCard({ group, students, onDelete, isOver }: GroupCardProps) {
+export function GroupCard({ group, students, onDelete, isOver, onReassignStudent }: GroupCardProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const { setNodeRef } = useDroppable({
         id: group.id,
@@ -148,6 +149,20 @@ export function GroupCard({ group, students, onDelete, isOver }: GroupCardProps)
                                         ].filter(Boolean).join(' • ')}
                                     </div>
                                 </div>
+                                {onReassignStudent && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onReassignStudent(student);
+                                        }}
+                                        className="p-1.5 rounded-lg hover:bg-white/10 text-text-secondary hover:text-primary-cyan transition-colors ml-2"
+                                        title="Reassign"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                        </svg>
+                                    </button>
+                                )}
                             </div>
                         ))
                     ) : (

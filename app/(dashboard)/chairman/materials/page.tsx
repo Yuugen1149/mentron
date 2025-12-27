@@ -25,7 +25,10 @@ export default async function ChairmanMaterials() {
     // Get all materials
     const { data: materials } = await supabase
         .from('materials')
-        .select('*')
+        .select(`
+            *,
+            group:groups(name)
+        `)
         .order('created_at', { ascending: false });
 
     return (
@@ -62,7 +65,7 @@ export default async function ChairmanMaterials() {
                                             {material.view_count} views
                                         </span>
                                         <span className="uppercase font-semibold">{material.file_type}</span>
-                                        <span>{material.department}</span>
+                                        <span>{material.group?.name || material.department || 'General'}</span>
                                     </div>
                                     <a
                                         href={material.file_url}

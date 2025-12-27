@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useId } from 'react';
-import { DndContext, DragOverlay, closestCenter, DragEndEvent, DragStartEvent, useSensor, useSensors, PointerSensor, TouchSensor, MouseSensor } from '@dnd-kit/core';
+import { useState, useEffect } from 'react';
+import { DndContext, DragOverlay, closestCenter, DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { CreateGroupModal } from '@/components/CreateGroupModal';
 import { GroupCard } from '@/components/GroupCard';
 import { StudentCard } from '@/components/StudentCard';
+import { StudentReassignmentModal } from '@/components/StudentReassignmentModal';
 
 interface Student {
     id: string;
@@ -37,18 +38,15 @@ interface StudentsClientProps {
     initialGroups: Group[];
     userDepartment: string;
     userRole: 'execom' | 'chairman';
-    userPosition?: string;
 }
 
-export function StudentsClient({ initialStudents, initialGroups, userDepartment, userRole, userPosition }: StudentsClientProps) {
-    // Use stable ID for DnD context to prevent hydration mismatch
-    const dndId = useId();
-
+export function StudentsClient({ initialStudents, initialGroups, userDepartment, userRole }: StudentsClientProps) {
     const [students, setStudents] = useState<Student[]>(initialStudents);
     const [groups, setGroups] = useState<Group[]>(initialGroups);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeStudent, setActiveStudent] = useState<Student | null>(null);
+    const [activeReassignStudent, setActiveReassignStudent] = useState<Student | null>(null);
     const [loading, setLoading] = useState(false);
     const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
     const [showYearView, setShowYearView] = useState(false);
@@ -194,6 +192,10 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
         });
     };
 
+    const handleReassignClick = (student: Student) => {
+        setActiveReassignStudent(student);
+    };
+
     const refreshData = async () => {
         try {
             const [studentsRes, groupsRes] = await Promise.all([
@@ -211,65 +213,9 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
         }
     };
 
-    // Delete student handler
-    const handleDeleteStudent = async (studentId: string) => {
-        setLoading(true);
-        try {
-            const response = await fetch(`/api/students/${studentId}`, {
-                method: 'DELETE'
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to delete student');
-            }
-
-            // Refresh data after successful deletion
-            await refreshData();
-
-            // Show success message (could be replaced with a toast)
-            console.log('Student deleted:', data.deletedStudent);
-
-        } catch (error: any) {
-            console.error('Error deleting student:', error);
-            alert(error.message || 'Failed to delete student. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Calculate statistics
-    const stats = {
-        total: students.length,
-        assigned: assignedStudents.length,
-        unassigned: unassignedStudents.length,
-        byYear: Object.entries(studentsByYear).map(([year, s]) => ({ year: Number(year), count: s.length }))
-    };
-
-    // Only Chairman and Vice Chair can see/use delete button
-    const canDeleteStudents = userRole === 'chairman' || userPosition === 'Vice Chair';
-
-    // Configure sensors for mobile touch support
-    const sensors = useSensors(
-        useSensor(MouseSensor, {
-            activationConstraint: {
-                distance: 10,
-            },
-        }),
-        useSensor(TouchSensor, {
-            activationConstraint: {
-                delay: 250,
-                tolerance: 5,
-            },
-        })
-    );
-
     return (
         <>
             <DndContext
-                id={dndId}
-                sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
@@ -280,7 +226,7 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                         <div>
                             <h2 className="text-2xl sm:text-3xl font-bold">Student Management</h2>
                             <p className="text-text-secondary text-sm">
-                                {stats.total} total students • {groups.length} groups
+                                {students.length} total students • {groups.length} groups
                             </p>
                         </div>
                         <button
@@ -292,62 +238,6 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                             </svg>
                             Create Group
                         </button>
-                    </div>
-
-                    {/* Statistics Dashboard */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <div className="glass-card !p-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-cyan to-secondary-purple flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold">{stats.total}</div>
-                                    <div className="text-xs text-text-secondary">Total Students</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="glass-card !p-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold text-green-400">{stats.assigned}</div>
-                                    <div className="text-xs text-text-secondary">Assigned</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="glass-card !p-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold text-amber-400">{stats.unassigned}</div>
-                                    <div className="text-xs text-text-secondary">Unassigned</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="glass-card !p-4">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg bg-secondary-purple/20 flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-secondary-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold text-secondary-purple">{groups.length}</div>
-                                    <div className="text-xs text-text-secondary">Groups</div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     {/* View Toggle */}
@@ -537,9 +427,9 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                                             <StudentCard
                                                 key={student.id}
                                                 student={student}
-                                                userRole={userRole}
-                                                showDeleteButton={canDeleteStudents}
-                                                onDelete={canDeleteStudents ? handleDeleteStudent : undefined}
+                                                showDeleteButton={userRole === 'chairman'}
+                                                onDelete={userRole === 'chairman' ? (() => alert('Delete not implemented for this view yet')) : undefined} // Or remove if not needed
+                                                onReassign={handleReassignClick}
                                             />
                                         ))
                                     ) : (
@@ -563,6 +453,7 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                                         group={group}
                                         students={assignedStudents}
                                         onDelete={handleDeleteGroup}
+                                        onReassignStudent={handleReassignClick}
                                     />
                                 ))}
                             </div>
@@ -605,6 +496,18 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                 onSuccess={refreshData}
                 userDepartment={userDepartment}
             />
+
+            {/* Reassign Student Modal */}
+            {activeReassignStudent && (
+                <StudentReassignmentModal
+                    isOpen={!!activeReassignStudent}
+                    onClose={() => setActiveReassignStudent(null)}
+                    student={activeReassignStudent}
+                    currentGroupId={activeReassignStudent.group_id}
+                    groups={groups}
+                    onSuccess={refreshData}
+                />
+            )}
         </>
     );
 }

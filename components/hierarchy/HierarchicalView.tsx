@@ -41,6 +41,7 @@ interface HierarchicalViewProps {
     selectedGroups?: string[];
     userRole: 'chairman' | 'execom';
     userDepartment?: string;
+    onStatsUpdate?: (stats: { years: number; departments: number; groups: number; students: number }) => void;
 }
 
 export function HierarchicalView({
@@ -48,7 +49,8 @@ export function HierarchicalView({
     onGroupsSelect,
     selectedGroups = [],
     userRole,
-    userDepartment
+    userDepartment,
+    onStatsUpdate
 }: HierarchicalViewProps) {
     const [hierarchy, setHierarchy] = useState<HierarchyNode[]>([]);
     const [loading, setLoading] = useState(true);
@@ -88,6 +90,16 @@ export function HierarchicalView({
             const groupsRes = await fetch('/api/groups');
             const groupsData = await groupsRes.json();
             const groups: Group[] = groupsData.groups || [];
+
+            // Calculate and report stats
+            if (onStatsUpdate) {
+                onStatsUpdate({
+                    years: years.length,
+                    departments: departments.length,
+                    groups: groups.length,
+                    students: groups.reduce((acc, g) => acc + (g.member_count || 0), 0)
+                });
+            }
 
             // Build hierarchy
             const hierarchyData: HierarchyNode[] = years.map(year => ({

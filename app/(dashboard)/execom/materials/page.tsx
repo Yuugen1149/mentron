@@ -26,7 +26,10 @@ export default async function ExecomMaterialsPage() {
     // Get all materials
     const { data: materials } = await supabase
         .from('materials')
-        .select('*')
+        .select(`
+            *,
+            group:groups(name)
+        `)
         .order('created_at', { ascending: false });
 
     const userName = admin.position || admin.email.split('@')[0];
@@ -82,7 +85,7 @@ export default async function ExecomMaterialsPage() {
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-lg font-semibold mb-1 truncate">{material.title}</h3>
                                             <div className="flex items-center gap-2 text-xs text-text-secondary">
-                                                <span>{material.department}</span>
+                                                <span>{material.group?.name || material.department || 'General'}</span>
                                                 <span>•</span>
                                                 <span>Year {material.year || 'All'}</span>
                                             </div>

@@ -33,6 +33,7 @@ export function HierarchyClient({ userRole, userDepartment }: HierarchyClientPro
     const [showTransferModal, setShowTransferModal] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [stats, setStats] = useState({ years: 0, departments: 0, groups: 0, students: 0 });
 
     function handleYearChange(yearId: string | null, yearNumber: number | null) {
         setSelectedYearId(yearId);
@@ -163,7 +164,7 @@ export function HierarchyClient({ userRole, userDepartment }: HierarchyClientPro
                             </svg>
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-[var(--text-primary)]">4</p>
+                            <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.years}</p>
                             <p className="text-xs text-[var(--text-secondary)]">Years</p>
                         </div>
                     </div>
@@ -177,7 +178,7 @@ export function HierarchyClient({ userRole, userDepartment }: HierarchyClientPro
                             </svg>
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-[var(--text-primary)]">7</p>
+                            <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.departments}</p>
                             <p className="text-xs text-[var(--text-secondary)]">Departments</p>
                         </div>
                     </div>
@@ -191,7 +192,7 @@ export function HierarchyClient({ userRole, userDepartment }: HierarchyClientPro
                             </svg>
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-[var(--text-primary)]">-</p>
+                            <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.groups}</p>
                             <p className="text-xs text-[var(--text-secondary)]">Groups</p>
                         </div>
                     </div>
@@ -205,7 +206,7 @@ export function HierarchyClient({ userRole, userDepartment }: HierarchyClientPro
                             </svg>
                         </div>
                         <div>
-                            <p className="text-2xl font-bold text-[var(--text-primary)]">-</p>
+                            <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.students}</p>
                             <p className="text-xs text-[var(--text-secondary)]">Students</p>
                         </div>
                     </div>
@@ -239,6 +240,7 @@ export function HierarchyClient({ userRole, userDepartment }: HierarchyClientPro
                         userDepartment={userDepartment}
                         selectedGroups={selectedGroups.map(g => g.id)}
                         onGroupsSelect={handleGroupsSelect}
+                        onStatsUpdate={setStats}
                     />
                 </div>
             </div>

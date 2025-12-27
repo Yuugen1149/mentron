@@ -1,12 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import { DEPARTMENTS, ACADEMIC_YEARS } from '@/lib/constants';
+import { ACADEMIC_YEARS } from '@/lib/constants';
 
 interface MaterialUploadFormProps {
     userRole: 'chairman' | 'execom';
+}
+
+interface Group {
+    id: string;
+    name: string;
+    department: string;
+    year: string | null;
 }
 
 export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
@@ -15,14 +22,32 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
     const [uploading, setUploading] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [feedback, setFeedback] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+    const [groups, setGroups] = useState<Group[]>([]);
+    const [loadingGroups, setLoadingGroups] = useState(true);
 
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        department: '',
         year: '',
-        fileType: '',
+        groupId: '',
     });
+
+    useEffect(() => {
+        const fetchGroups = async () => {
+            try {
+                const response = await fetch('/api/groups');
+                if (!response.ok) throw new Error('Failed to fetch groups');
+                const data = await response.json();
+                setGroups(data.groups || []);
+            } catch (error) {
+                console.error('Error loading groups:', error);
+            } finally {
+                setLoadingGroups(false);
+            }
+        };
+
+        fetchGroups();
+    }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -41,11 +66,18 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
             return;
         }
 
+        if (!formData.groupId) {
+            setFeedback({ type: 'error', message: 'Please select a group.' });
+            setUploading(false);
+            return;
+        }
+
         try {
-            // 1. Upload File to Storage
+            // 1. Upload File to Storage (Organized by Group ID)
             const fileExt = file.name.split('.').pop();
             const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-            const filePath = `${formData.department}/${formData.year}/${fileName}`;
+            // Use group ID and Year for path organization
+            const filePath = `${formData.groupId}/${formData.year}/${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('materials')
@@ -71,9 +103,10 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
                 .insert({
                     title: formData.title,
                     description: formData.description,
-                    department: formData.department,
                     year: formData.year,
-                    file_type: formData.fileType,
+                    group_id: formData.groupId,
+                    // department: null, // No longer selected
+                    // file_type: null, // No longer selected
                     file_path: filePath,
                     file_url: publicUrl,
                     uploaded_by: user.id
@@ -81,7 +114,7 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
 
             if (dbError) {
                 console.error('DB Insert Error:', dbError);
-                // Attempt to cleanup file if DB insert fails? (Optional but good practice)
+                // Attempt to cleanup file if DB insert fails
                 await supabase.storage.from('materials').remove([filePath]);
                 throw new Error('Failed to save material metadata.');
             }
@@ -90,13 +123,11 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
             setFormData({
                 title: '',
                 description: '',
-                department: '',
                 year: '',
-                fileType: '',
+                groupId: '',
             });
             setFile(null);
 
-            // Re-fetch data? Or assume user navigates away.
             router.refresh();
 
         } catch (error: any) {
@@ -160,25 +191,33 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
                     />
                 </div>
 
-                {/* Department and Year */}
+                {/* Group and Year */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-text-secondary mb-2">
-                            Department *
+                            Group *
                         </label>
-                        <select
-                            required
-                            value={formData.department}
-                            onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                            className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary-cyan focus:outline-none focus:ring-2 focus:ring-primary-cyan/20 transition-all"
-                        >
-                            <option value="">Select Department</option>
-                            {DEPARTMENTS.map((dept) => (
-                                <option key={dept.code} value={dept.code}>
-                                    {dept.name}
-                                </option>
-                            ))}
-                        </select>
+                        {loadingGroups ? (
+                            <div className="text-sm text-text-secondary animate-pulse">Loading groups...</div>
+                        ) : groups.length === 0 ? (
+                            <div className="text-sm text-yellow-400 bg-yellow-400/10 p-3 rounded-lg border border-yellow-400/20">
+                                There is no group. Please create a group to upload the file.
+                            </div>
+                        ) : (
+                            <select
+                                required
+                                value={formData.groupId}
+                                onChange={(e) => setFormData({ ...formData, groupId: e.target.value })}
+                                className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary-cyan focus:outline-none focus:ring-2 focus:ring-primary-cyan/20 transition-all"
+                            >
+                                <option value="">Select Group</option>
+                                {groups.map((group) => (
+                                    <option key={group.id} value={group.id}>
+                                        {group.name}
+                                    </option>
+                                ))}
+                            </select>
+                        )}
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-text-secondary mb-2">
@@ -198,25 +237,6 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
                             ))}
                         </select>
                     </div>
-                </div>
-
-                {/* File Type */}
-                <div>
-                    <label className="block text-sm font-medium text-text-secondary mb-2">
-                        File Type *
-                    </label>
-                    <select
-                        required
-                        value={formData.fileType}
-                        onChange={(e) => setFormData({ ...formData, fileType: e.target.value })}
-                        className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary-cyan focus:outline-none focus:ring-2 focus:ring-primary-cyan/20 transition-all"
-                    >
-                        <option value="">Select Type</option>
-                        <option value="PDF">PDF</option>
-                        <option value="DOC">Document</option>
-                        <option value="PPT">Presentation</option>
-                        <option value="VIDEO">Video</option>
-                    </select>
                 </div>
 
                 {/* File Upload */}
@@ -257,7 +277,7 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
                 {/* Submit Button */}
                 <button
                     type="submit"
-                    disabled={uploading}
+                    disabled={uploading || groups.length === 0}
                     className="btn btn-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {uploading ? (

@@ -123,9 +123,8 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
                     description: formData.description,
                     year: formData.year,
                     group_id: formData.groupId,
-                    department: department, // Required by schema if migration not applied
-                    file_type: fileType,    // Required by schema if migration not applied
-                    file_path: filePath,
+                    department: department,
+                    file_type: fileType,
                     file_url: publicUrl,
                     uploaded_by: user.id
                 });

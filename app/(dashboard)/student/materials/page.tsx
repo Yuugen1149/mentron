@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { MaterialViewButton } from '@/components/MaterialViewButton';
 
 export default async function StudentMaterialsPage() {
     const supabase = await createClient();
@@ -94,14 +95,10 @@ export default async function StudentMaterialsPage() {
                                         <span className="uppercase font-semibold">{material.file_type}</span>
                                     </div>
 
-                                    <a
-                                        href={material.file_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="btn btn-primary w-full text-sm justify-center touch-manipulation"
-                                    >
-                                        View Material
-                                    </a>
+                                    <MaterialViewButton
+                                        materialId={material.id}
+                                        fileUrl={material.file_url}
+                                    />
                                 </div>
                             ))}
                         </div>

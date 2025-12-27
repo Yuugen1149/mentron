@@ -86,7 +86,6 @@ export default async function ExecomStudentsPage() {
                         initialGroups={groupsWithCount}
                         userDepartment={admin.department}
                         userRole={admin.role as 'execom' | 'chairman'}
-                        userPosition={admin.position}
                     />
 
                     <div className="h-8 sm:h-0 mobile-nav-safe"></div>

@@ -4,6 +4,14 @@ import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { MaterialViewButton } from '@/components/MaterialViewButton';
 
+/**
+ * Student Materials Page
+ * 
+ * Server component with strict group validation:
+ * - Re-verifies group assignment on each load
+ * - Redirects unassigned students to dashboard
+ * - Filters materials strictly by current group's department and year
+ */
 export default async function StudentMaterialsPage() {
     const supabase = await createClient();
 
@@ -13,24 +21,51 @@ export default async function StudentMaterialsPage() {
         redirect('/login');
     }
 
-    // Get student profile
-    const { data: student } = await supabase
+    // Get student profile with fresh group info
+    const { data: student, error: studentError } = await supabase
         .from('group_members')
-        .select('*')
+        .select(`
+            *,
+            group:groups(id, name, department, year, color)
+        `)
         .eq('id', user.id)
         .single();
 
-    if (!student) {
+    if (studentError || !student) {
+        console.log('[Materials] Student profile not found, redirecting to login');
         redirect('/login');
     }
 
-    // Get materials for student's department and year
-    const { data: materials } = await supabase
+    // STRICT VALIDATION: Redirect if not assigned to a group
+    if (!student.group_id) {
+        console.log('[Materials] Student not assigned to group, redirecting to dashboard');
+        redirect('/student');
+    }
+
+    const studentGroup = student.group as {
+        id: string;
+        name: string;
+        department: string;
+        year: number;
+        color: string;
+    };
+
+    if (!studentGroup) {
+        console.log('[Materials] Group data missing despite group_id, redirecting');
+        redirect('/student');
+    }
+
+    // Get materials - strictly filtered by current group's department and year
+    const { data: materials, error: materialsError } = await supabase
         .from('materials')
         .select('*')
-        .eq('department', student.department)
-        .or(`year.eq.${student.year},year.is.null`)
+        .eq('department', studentGroup.department)
+        .or(`year.eq.${studentGroup.year},year.is.null`)
         .order('created_at', { ascending: false });
+
+    if (materialsError) {
+        console.error('[Materials] Error fetching materials:', materialsError);
+    }
 
     const userName = student.email.split('@')[0];
 
@@ -47,17 +82,30 @@ export default async function StudentMaterialsPage() {
                 <div className="max-w-7xl mx-auto">
                     <DashboardHeader
                         userName={userName}
-                        subtitle={`${student.department} - Year ${student.year}`}
+                        subtitle={`${studentGroup.department} - Year ${studentGroup.year}`}
                         userRole="student"
                         onSignOut={handleSignOut}
                     />
 
-                    {/* Page Title */}
-                    <div className="mb-8">
-                        <h2 className="!text-3xl sm:!text-4xl font-bold mb-2">Study Materials</h2>
-                        <p className="text-text-secondary">
-                            Access course materials for {student.department} - Year {student.year}
-                        </p>
+                    {/* Page Title with Group Badge */}
+                    <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h2 className="!text-3xl sm:!text-4xl font-bold mb-2">Study Materials</h2>
+                            <p className="text-text-secondary">
+                                Access course materials for your group
+                            </p>
+                        </div>
+                        <span
+                            className="px-4 py-2 rounded-full text-sm font-medium self-start flex items-center gap-2"
+                            style={{
+                                backgroundColor: `${studentGroup.color}20`,
+                                color: studentGroup.color,
+                                border: `1px solid ${studentGroup.color}40`
+                            }}
+                        >
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: studentGroup.color }}></span>
+                            {studentGroup.name}
+                        </span>
                     </div>
 
                     {/* Materials Grid */}
@@ -109,7 +157,7 @@ export default async function StudentMaterialsPage() {
                             </svg>
                             <h3 className="text-xl font-semibold mb-2">No Materials Yet</h3>
                             <p className="text-text-secondary">
-                                Study materials for your department and year will appear here.
+                                Study materials for {studentGroup.department} Year {studentGroup.year} will appear here.
                             </p>
                         </div>
                     )}

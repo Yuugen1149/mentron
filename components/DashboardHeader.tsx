@@ -46,7 +46,8 @@ export function DashboardHeader({ userName, subtitle, userRole, onSignOut }: Das
         features: any[];
         materials: any[];
         groups: any[];
-    }>({ features: [], materials: [], groups: [] });
+        students: any[];
+    }>({ features: [], materials: [], groups: [], students: [] });
     const [isSearching, setIsSearching] = useState(false);
     const [showResults, setShowResults] = useState(false);
 
@@ -74,7 +75,7 @@ export function DashboardHeader({ userName, subtitle, userRole, onSignOut }: Das
     useEffect(() => {
         const handleSearch = async () => {
             if (!searchQuery.trim()) {
-                setSearchResults({ features: [], materials: [], groups: [] });
+                setSearchResults({ features: [], materials: [], groups: [], students: [] });
                 return;
             }
 
@@ -95,12 +96,13 @@ export function DashboardHeader({ userName, subtitle, userRole, onSignOut }: Das
                 setSearchResults({
                     features: filteredFeatures,
                     materials: data.materials || [],
-                    groups: data.groups || []
+                    groups: data.groups || [],
+                    students: data.students || []
                 });
             } catch (error) {
                 console.error("Search failed", error);
                 // Fallback to just features on error
-                setSearchResults({ features: filteredFeatures, materials: [], groups: [] });
+                setSearchResults({ features: filteredFeatures, materials: [], groups: [], students: [] });
             } finally {
                 setIsSearching(false);
             }
@@ -142,7 +144,16 @@ export function DashboardHeader({ userName, subtitle, userRole, onSignOut }: Das
                     {/* Search Results Dropdown */}
                     {showResults && (
                         <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--deep-bg)] border border-[var(--glass-border)] rounded-xl shadow-2xl overflow-hidden max-h-96 overflow-y-auto">
-                            {/* Features */}
+                            {/* Loading Indicator */}
+                            {isSearching && (
+                                <div className="p-4 flex items-center justify-center gap-2">
+                                    <svg className="animate-spin w-5 h-5 text-primary-cyan" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span className="text-sm text-[var(--text-secondary)]">Searching...</span>
+                                </div>
+                            )}
                             {searchResults.features.length > 0 && (
                                 <div className="p-2">
                                     <div className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider px-2 py-1">Features</div>
@@ -182,8 +193,26 @@ export function DashboardHeader({ userName, subtitle, userRole, onSignOut }: Das
                                 </div>
                             )}
 
+                            {/* Students */}
+                            {searchResults.students.length > 0 && (
+                                <div className="p-2 border-t border-[var(--glass-border)]">
+                                    <div className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider px-2 py-1">Students</div>
+                                    {searchResults.students.map((item) => (
+                                        <button key={item.id} onClick={() => handleResultClick(`/${userRole}/students?highlight=${item.id}`)} className="w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-2 group">
+                                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-cyan to-secondary-purple flex items-center justify-center text-xs font-bold text-white">
+                                                {(item.name || item.email)?.[0]?.toUpperCase() || '?'}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-sm font-medium text-[var(--text-primary)] group-hover:text-primary-cyan truncate block">{item.name || item.email}</span>
+                                                <span className="text-xs text-[var(--text-secondary)] truncate block">{item.department} • Year {item.year}</span>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
                             {/* Empty State */}
-                            {!isSearching && !searchResults.features.length && !searchResults.materials.length && !searchResults.groups.length && (
+                            {!isSearching && !searchResults.features.length && !searchResults.materials.length && !searchResults.groups.length && !searchResults.students.length && (
                                 <div className="p-4 text-center text-[var(--text-secondary)] text-sm">
                                     No results found for "{searchQuery}"
                                 </div>

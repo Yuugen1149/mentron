@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { DndContext, DragOverlay, closestCenter, DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { CreateGroupModal } from '@/components/CreateGroupModal';
 import { GroupCard } from '@/components/GroupCard';
 import { StudentCard } from '@/components/StudentCard';
 import { StudentReassignmentModal } from '@/components/StudentReassignmentModal';
+import { StudentSearchDropdown } from '@/components/StudentSearchDropdown';
 
 interface Student {
     id: string;
@@ -44,12 +45,13 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
     const [students, setStudents] = useState<Student[]>(initialStudents);
     const [groups, setGroups] = useState<Group[]>(initialGroups);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
     const [activeStudent, setActiveStudent] = useState<Student | null>(null);
     const [activeReassignStudent, setActiveReassignStudent] = useState<Student | null>(null);
     const [loading, setLoading] = useState(false);
     const [selectedStudents, setSelectedStudents] = useState<Set<string>>(new Set());
     const [showYearView, setShowYearView] = useState(false);
+    const [highlightedStudentId, setHighlightedStudentId] = useState<string | null>(null);
+    const [filteredBySearch, setFilteredBySearch] = useState<Student[]>([]);
 
     const unassignedStudents = students.filter(s => !s.group_id);
     const assignedStudents = students.filter(s => s.group_id);
@@ -63,10 +65,26 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
         return acc;
     }, {} as Record<number, Student[]>);
 
-    // Filter students based on search
-    const filteredUnassigned = unassignedStudents.filter(s =>
-        s.email.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Filter students based on search - now uses filteredBySearch from StudentSearchDropdown
+    const filteredUnassigned = filteredBySearch.length > 0
+        ? unassignedStudents.filter(s => filteredBySearch.some(fs => fs.id === s.id))
+        : unassignedStudents;
+
+    // Handle student selection from search dropdown
+    const handleSearchSelect = useCallback((student: Student) => {
+        setHighlightedStudentId(student.id);
+        // Scroll to the student card after a short delay
+        setTimeout(() => {
+            const element = document.getElementById(`student-${student.id}`);
+            element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+    }, []);
+
+    // Handle filter change from search dropdown
+    const handleSearchFilter = useCallback((students: Student[]) => {
+        setFilteredBySearch(students);
+        setHighlightedStudentId(null);
+    }, []);
 
     const handleDragStart = (event: DragStartEvent) => {
         const student = event.active.data.current?.student;
@@ -266,18 +284,11 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                 {/* Search Bar - Only show in Groups View */}
                 {!showYearView && (
                     <div className="mb-6">
-                        <div className="relative">
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search students by email..."
-                                className="w-full px-4 py-3 pl-11 rounded-lg bg-white/5 border border-white/10 focus:border-primary-cyan focus:outline-none focus:ring-2 focus:ring-primary-cyan/20 transition-all"
-                            />
-                            <svg className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
+                        <StudentSearchDropdown
+                            onSelectStudent={handleSearchSelect}
+                            onFilterChange={handleSearchFilter}
+                            placeholder="Search students by name (prefix match)..."
+                        />
                     </div>
                 )}
 
@@ -424,17 +435,24 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                                 <div className="space-y-2 max-h-96 overflow-y-auto">
                                     {filteredUnassigned.length > 0 ? (
                                         filteredUnassigned.map(student => (
-                                            <StudentCard
+                                            <div
                                                 key={student.id}
-                                                student={student}
-                                                showDeleteButton={userRole === 'chairman'}
-                                                onDelete={userRole === 'chairman' ? (() => alert('Delete not implemented for this view yet')) : undefined} // Or remove if not needed
-                                                onReassign={handleReassignClick}
-                                            />
+                                                id={`student-${student.id}`}
+                                                className={highlightedStudentId === student.id ? 'ring-2 ring-primary-cyan rounded-lg' : ''}
+                                            >
+                                                <StudentCard
+                                                    student={student}
+                                                    showDeleteButton={userRole === 'chairman'}
+                                                    onDelete={userRole === 'chairman' ? (() => alert('Delete not implemented for this view yet')) : undefined}
+                                                    onReassign={handleReassignClick}
+                                                />
+                                            </div>
                                         ))
                                     ) : (
                                         <div className="text-center py-8 text-text-secondary">
-                                            {searchQuery ? 'No matching students found' : 'All students are assigned to groups'}
+                                            {filteredBySearch.length === 0 && unassignedStudents.length > 0
+                                                ? 'All students are assigned to groups'
+                                                : 'No matching students found'}
                                         </div>
                                     )}
                                 </div>

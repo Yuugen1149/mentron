@@ -98,6 +98,24 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
 
             if (!user) throw new Error('User not authenticated');
 
+            // Derive file_type from file extension
+            const fileExtension = file.name.split('.').pop()?.toUpperCase() || 'OTHER';
+            const fileTypeMap: Record<string, string> = {
+                'PDF': 'PDF',
+                'DOC': 'DOC',
+                'DOCX': 'DOC',
+                'PPT': 'PPT',
+                'PPTX': 'PPT',
+                'MP4': 'VIDEO',
+                'MOV': 'VIDEO',
+                'AVI': 'VIDEO'
+            };
+            const fileType = fileTypeMap[fileExtension] || 'OTHER';
+
+            // Get department from selected group
+            const selectedGroup = groups.find(g => g.id === formData.groupId);
+            const department = selectedGroup?.department || '';
+
             const { error: dbError } = await supabase
                 .from('materials')
                 .insert({
@@ -105,18 +123,21 @@ export function MaterialUploadForm({ userRole }: MaterialUploadFormProps) {
                     description: formData.description,
                     year: formData.year,
                     group_id: formData.groupId,
-                    // department: null, // No longer selected
-                    // file_type: null, // No longer selected
+                    department: department, // Required by schema if migration not applied
+                    file_type: fileType,    // Required by schema if migration not applied
                     file_path: filePath,
                     file_url: publicUrl,
                     uploaded_by: user.id
                 });
 
             if (dbError) {
-                console.error('DB Insert Error:', dbError);
+                console.error('DB Insert Error Details:', JSON.stringify(dbError, null, 2));
+                console.error('DB Error Message:', dbError.message);
+                console.error('DB Error Code:', dbError.code);
+                console.error('DB Error Details:', dbError.details);
                 // Attempt to cleanup file if DB insert fails
                 await supabase.storage.from('materials').remove([filePath]);
-                throw new Error('Failed to save material metadata.');
+                throw new Error(`Failed to save material metadata: ${dbError.message || 'Unknown database error'}`);
             }
 
             setFeedback({ type: 'success', message: 'Material uploaded successfully!' });

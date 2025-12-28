@@ -1,5 +1,6 @@
-import { LoadingSkeleton } from '@/components/LoadingSkeleton';
+import { WordLoader } from '@/components/WordLoader';
 
 export default function ChairmanLoading() {
-    return <LoadingSkeleton type="full" />;
+    return <WordLoader />;
 }
+

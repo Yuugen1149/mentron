@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MENTRON | The Campus Chronicle</title>
+    <meta name="description" content="MENTRON - Student-Driven Academic Mentorship Platform by ISTE SCTCE">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Chomsky&family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Oswald:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/landing/css/landing-3d.css">
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Sound Controls -->
+    <div class="sound-control" id="sound-toggle">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path
+                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+        </svg>
+    </div>
+
+    <!-- Navigation / Progress -->
+    <div class="edition-info">
+        <span>VOL. XCVIII</span>
+        <span>•</span>
+        <span>STUDENT EDITION</span>
+        <span>•</span>
+        <span id="page-indicator">Page 1 of 3</span>
+    </div>
+
+    <!-- Main 3D Container -->
+    <div id="newspaper-container">
+        <div class="newspaper-wrapper">
+
+            <!-- ============================================
+                 PAGE 1: FRONT PAGE - MASTHEAD & LEAD STORY
+                 ============================================ -->
+            <article class="page" id="page-1">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <header class="masthead">
+                        <div class="meta-top">
+                            <span>Est. 2024</span>
+                            <span>SCTCE, Kerala, India</span>
+                            <span>Academic Edition</span>
+                        </div>
+                        <h1>MENTRON</h1>
+                        <div class="meta-bottom">
+                            <div class="border-lines"></div>
+                            <div class="date-price">
+                                <span>SUNDAY, DECEMBER 28, 2024</span>
+                                <span>PRICE: FREE KNOWLEDGE</span>
+                            </div>
+                            <div class="border-lines"></div>
+                        </div>
+                    </header>
+
+                    <div class="layout-grid-main">
+                        <!-- Lead Story -->
+                        <div class="lead-story cutting" data-magnify="1.1">
+                            <h2 class="headline-large">WHERE KNOWLEDGE FLOWS AND STUDENTS GROW</h2>
+                            <h3 class="subhead">A student-led academic mentorship initiative under ISTE SCTCE empowers
+                                the next generation.</h3>
+                            <div class="lead-image-container">
+                                <div class="placeholder-img">
+                                    <img src="/landing/mentron-logo.png" alt="MENTRON Logo"
+                                        style="max-height: 140px; width: auto; filter: none;">
+                                </div>
+                                <span class="caption">The MENTRON Initiative — Bridging Knowledge Gaps</span>
+                            </div>
+                            <div class="columns-3">
+                                <p><span class="drop-cap">T</span>he landscape of academic success is witnessing a
+                                    paradigm shift. With the introduction of MENTRON, students are now empowered more
+                                    than ever to bridge the gap between confusion and clarity. "It is not just about
+                                    passing exams," says the initiative lead, "It is about truly understanding and
+                                    growing together."</p>
+                                <p>The initiative connects juniors with seniors who transform experience into guidance.
+                                    Providing access to previous year questions, curated notes, and smart study
+                                    resources, MENTRON ensures no student walks the academic path alone.</p>
+                                <p>From peer mentoring and doubt-clearing sessions to exam preparation strategies, the
+                                    platform supports communication skills, confidence building, and interview
+                                    readiness.</p>
+                            </div>
+                        </div>
+
+                        <!-- Sidebar -->
+                        <div class="sidebar">
+                            <div class="weather-widget cutting">
+                                <h4>RESOURCE COUNT</h4>
+                                <div class="weather-display">
+                                    <span class="temp">500+</span>
+                                    <span class="condition">Materials Available</span>
+                                </div>
+                                <p class="tiny-text">Notes, PYQs, and more</p>
+                            </div>
+
+                            <div class="ad-space cutting">
+                                <div class="ad-border">
+                                    <h5>WANTED</h5>
+                                    <p>Creative Minds &<br>Future Mentors</p>
+                                    <button class="news-btn">APPLY NOW</button>
+                                </div>
+                            </div>
+
+                            <div class="quick-news cutting">
+                                <h4>QUICK STATS</h4>
+                                <ul>
+                                    <li><strong>Students:</strong> 1000+ registered</li>
+                                    <li><strong>Mentors:</strong> 50+ active guides</li>
+                                    <li><strong>Resources:</strong> 500+ materials</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-shadow"></div>
+            </article>
+
+            <!-- ============================================
+                 PAGE 2: FEATURES & PILLARS
+                 ============================================ -->
+            <article class="page" id="page-2">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <header class="page-header">
+                        <h2>OUR PILLARS OF SUPPORT</h2>
+                        <span>Page 2</span>
+                    </header>
+
+                    <div class="mission-grid">
+                        <!-- Card 1: Guidance -->
+                        <div class="mission-card cutting">
+                            <div class="card-icon">🎓</div>
+                            <h3>Guidance</h3>
+                            <p>Connects juniors with seniors who transform experience into guidance and confusion into
+                                clarity.</p>
+                        </div>
+
+                        <!-- Card 2: Resources -->
+                        <div class="mission-card cutting">
+                            <div class="card-icon">📚</div>
+                            <h3>Resources</h3>
+                            <p>Provides access to previous year questions, curated notes, and smart study resources.</p>
+                        </div>
+
+                        <!-- Card 3: Support -->
+                        <div class="mission-card cutting">
+                            <div class="card-icon">🤝</div>
+                            <h3>Support</h3>
+                            <p>Offers peer mentoring, doubt-clearing sessions, and exam preparation strategies.</p>
+                        </div>
+
+                        <!-- Card 4: Growth -->
+                        <div class="mission-card cutting">
+                            <div class="card-icon">🚀</div>
+                            <h3>Growth</h3>
+                            <p>Supports communication skills, confidence building, and interview readiness.</p>
+                        </div>
+
+                        <!-- Card 5: Community -->
+                        <div class="mission-card cutting">
+                            <div class="card-icon">🌍</div>
+                            <h3>Community</h3>
+                            <p>Builds lasting connections across batches and departments.</p>
+                        </div>
+
+                        <!-- Card 6: Culture -->
+                        <div class="mission-card cutting">
+                            <div class="card-icon">✨</div>
+                            <h3>Culture</h3>
+                            <p>Creates a culture where learning is collaborative and no student feels lost.</p>
+                        </div>
+                    </div>
+
+                    <!-- Stats Row -->
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <span class="stat-number">500+</span>
+                            <span class="stat-label">Resources</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">1000+</span>
+                            <span class="stat-label">Students</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Mentors</span>
+                        </div>
+                    </div>
+
+                    <!-- Powered By Section -->
+                    <div class="photo-essay cutting" style="margin-top: 1rem;">
+                        <div class="placeholder-img-wide"
+                            style="height: 100px; display: flex; align-items: center; justify-content: center; gap: 2rem; background: linear-gradient(135deg, #2f3542 0%, #57606f 100%);">
+                            <div style="text-align: center; color: #fff;">
+                                <div style="font-family: var(--font-sans); font-size: 1.5rem; font-weight: 700;">SWAAS
+                                </div>
+                                <div style="font-size: 0.7rem; opacity: 0.8;">Student Welfare & Academic Support</div>
+                            </div>
+                            <div style="width: 2px; height: 50px; background: rgba(255,255,255,0.3);"></div>
+                            <div style="text-align: center; color: #fff;">
+                                <div style="font-family: var(--font-sans); font-size: 1.5rem; font-weight: 700;">ISTE
+                                    SCTCE</div>
+                                <div style="font-size: 0.7rem; opacity: 0.8;">Indian Society for Technical Education
+                                </div>
+                            </div>
+                        </div>
+                        <span class="caption">A collaborative initiative by student organizations</span>
+                    </div>
+                </div>
+                <div class="page-shadow"></div>
+            </article>
+
+            <!-- ============================================
+                 PAGE 3: CONTACT & CALL TO ACTION
+                 ============================================ -->
+            <article class="page" id="page-3">
+                <div class="paper-texture"></div>
+                <div class="page-content">
+                    <header class="page-header">
+                        <h2>CLASSIFIEDS & CONTACT</h2>
+                        <span>Page 3</span>
+                    </header>
+
+                    <div class="layout-columns-4">
+                        <div class="col-section cutting">
+                            <h4>JOIN MENTRON</h4>
+                            <p>Become part of the academic mentorship revolution. Sign up today!</p>
+                            <a href="/login" style="text-decoration: none;">
+                                <button class="news-btn" style="width: 100%; margin-top: 0.5rem;">GET STARTED →</button>
+                            </a>
+                        </div>
+                        <div class="col-section cutting">
+                            <h4>QUICK ACCESS</h4>
+                            <ul class="clean-list">
+                                <li><strong>Study Materials</strong><br>PYQs & Notes</li>
+                                <li><strong>Find Mentors</strong><br>Connect with seniors</li>
+                                <li><strong>Dashboard</strong><br>Track progress</li>
+                            </ul>
+                        </div>
+                        <div class="col-section cutting">
+                            <h4>THE TEAM</h4>
+                            <p><strong>Powered by:</strong> ISTE SCTCE</p>
+                            <p><strong>Initiative:</strong> SWAAS</p>
+                            <p><strong>For:</strong> Students, By Students</p>
+                        </div>
+                        <div class="col-section cutting">
+                            <h4>TAKE ACTION</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 0.8rem;">Don't prepare alone.<br><strong>Prepare
+                                    smart.</strong></p>
+                            <a href="/login" style="text-decoration: none;">
+                                <button class="news-btn-lg">GET STARTED</button>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="footer-ad cutting">
+                        <h2>MENTRON</h2>
+                        <p>Student-Driven Academic Mentorship</p>
+                        <p class="tiny-text">© 2024 ISTE Student Chapter SCTCE. All rights reserved. Where Knowledge
+                            Flows and Students Grow.</p>
+                    </div>
+                </div>
+                <div class="page-shadow"></div>
+            </article>
+
+        </div>
+    </div>
+
+    <script src="/landing/js/landing-3d.js"></script>
+</body>
+
+</html>

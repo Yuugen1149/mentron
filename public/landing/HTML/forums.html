@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Forums | ISTE SCTCE</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Explore department forums of ISTE Student Chapter at SCTCE - SWaS, EXIS, BITS, TORQ">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../CSS/brutalist.css">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-text">FORUMS</div>
+        <div class="preloader-line"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-logo">
+            <img src="../IMAGES/isteofficiallogo.png" alt="ISTE" class="nav-logo-img">
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">HOME</a>
+            <a href="index.html#about" class="nav-link">ABOUT</a>
+            <a href="forums.html" class="nav-link active">FORUMS</a>
+            <a href="events.html" class="nav-link">EVENTS</a>
+            <a href="execom.html" class="nav-link">EXECOM</a>
+            <a href="gallery.html" class="nav-link">GALLERY</a>
+            <a href="contact.html" class="nav-link">CONTACT</a>
+        </div>
+        <div class="nav-menu-btn" id="menuBtn">
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html" class="mobile-link">HOME</a>
+        <a href="index.html#about" class="mobile-link">ABOUT</a>
+        <a href="forums.html" class="mobile-link">FORUMS</a>
+        <a href="events.html" class="mobile-link">EVENTS</a>
+        <a href="execom.html" class="mobile-link">EXECOM</a>
+        <a href="gallery.html" class="mobile-link">GALLERY</a>
+        <a href="contact.html" class="mobile-link">CONTACT</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" style="min-height: auto; padding-top: 160px; padding-bottom: 80px;">
+        <div class="section-bg-text">FORUMS</div>
+        <div class="hero-content">
+            <div class="hero-tag">DEPARTMENT COMMUNITIES</div>
+            <h1 class="hero-title">
+                <span class="title-line">EXPLORE</span>
+                <span class="title-line accent">FORUMS</span>
+            </h1>
+            <p class="hero-subtitle">Connect with your specialized community. Each forum brings together passionate
+                students from specific departments.</p>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee-container">
+        <div class="marquee-track">
+            <span class="marquee-item">🔬 SWAS</span>
+            <span class="marquee-item">⚡ EXIS</span>
+            <span class="marquee-item">💻 BITS</span>
+            <span class="marquee-item">⚙️ TORQ</span>
+            <span class="marquee-item">🤝 COLLABORATION</span>
+            <span class="marquee-item">🚀 INNOVATION</span>
+            <span class="marquee-item">🔬 SWAS</span>
+            <span class="marquee-item">⚡ EXIS</span>
+            <span class="marquee-item">💻 BITS</span>
+            <span class="marquee-item">⚙️ TORQ</span>
+        </div>
+    </div>
+
+    <!-- Forums Section -->
+    <section class="forums-section">
+        <div class="section-header">
+            <div class="section-tag">CHOOSE YOUR</div>
+            <h2 class="section-title-large">FORUM</h2>
+        </div>
+
+        <div class="forums-grid">
+            <!-- SWaS -->
+            <a href="forum-swas.html" class="forum-card">
+                <div class="forum-number">01</div>
+                <div class="forum-content">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
+                        <img src="../IMAGES/Swas-logo.png" alt="SWaS" style="height: 40px; width: auto;">
+                        <h3 class="forum-title" style="margin: 0;">SWAS FORUM</h3>
+                    </div>
+                    <p class="forum-desc">Join SWaS and help shape a vibrant, supportive student community with
+                        like-minded tech enthusiasts. Interdisciplinary creativity and applied sciences.</p>
+                </div>
+                <div class="forum-arrow">→</div>
+            </a>
+
+            <!-- EXIS -->
+            <a href="forum-ece.html" class="forum-card">
+                <div class="forum-number">02</div>
+                <div class="forum-content">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
+                        <img src="../IMAGES/EXIS-logo.png" alt="EXIS" style="height: 40px; width: auto;">
+                        <h3 class="forum-title" style="margin: 0;">EXIS FORUM (ECE)</h3>
+                    </div>
+                    <p class="forum-desc">Connect with ECE students, work on embedded systems, circuits, and
+                        telecommunications projects. Electronics & Communication Engineering.</p>
+                </div>
+                <div class="forum-arrow">→</div>
+            </a>
+
+            <!-- BITS -->
+            <a href="forum-cs.html" class="forum-card">
+                <div class="forum-number">03</div>
+                <div class="forum-content">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
+                        <img src="../IMAGES/BITS.png" alt="BITS" style="height: 40px; width: auto;">
+                        <h3 class="forum-title" style="margin: 0;">BITS FORUM (CS)</h3>
+                    </div>
+                    <p class="forum-desc">Connect with fellow computer science students, collaborate on projects, and
+                        explore the latest in software development and AI.</p>
+                </div>
+                <div class="forum-arrow">→</div>
+            </a>
+
+            <!-- TORQ -->
+            <a href="forum-mechanical.html" class="forum-card">
+                <div class="forum-number">04</div>
+                <div class="forum-content">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
+                        <img src="../IMAGES/torq.png" alt="TORQ" style="height: 40px; width: auto;">
+                        <h3 class="forum-title" style="margin: 0;">TORQ FORUM (MECH)</h3>
+                    </div>
+                    <p class="forum-desc">Join TORQ students in exploring design, manufacturing, robotics, and
+                        automotive innovation. Mechanical Engineering excellence.</p>
+                </div>
+                <div class="forum-arrow">→</div>
+            </a>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="join-section">
+        <div class="join-bg-text">JOIN</div>
+        <div class="join-content">
+            <h2 class="join-title">FIND YOUR TRIBE</h2>
+            <p class="join-desc">Each forum is a community of passionate individuals dedicated to excellence in their
+                field. Join a forum and start your journey.</p>
+            <div class="join-cta">
+                <a href="join.html" class="btn-primary btn-large">JOIN ISTE</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-logo">ISTE SCTCE</div>
+            <div class="footer-tagline">SHAPING THE FUTURE</div>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-bottom">
+            <span class="footer-copyright">© 2025 ISTE STUDENT CHAPTER, SCTCE. ALL RIGHTS RESERVED.</span>
+            <div class="footer-links">
+                <a href="#">PRIVACY</a>
+                <a href="#">TERMS</a>
+                <a href="contact.html">CONTACT</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="../JS/brutalist.js"></script>
+</body>
+
+</html>

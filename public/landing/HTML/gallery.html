@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Gallery | ISTE SCTCE</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Photo gallery of ISTE Student Chapter events and activities at SCTCE">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../CSS/brutalist.css">
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* Gallery grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 0;
+            border-top: 2px solid var(--border);
+            padding: 0 var(--container-padding);
+        }
+
+        .gallery-item {
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .gallery-item:nth-child(3n) {
+            border-right: none;
+        }
+
+        @media (max-width: 1024px) {
+            .gallery-item:nth-child(3n) {
+                border-right: 1px solid var(--border);
+            }
+
+            .gallery-item:nth-child(2n) {
+                border-right: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gallery-item {
+                border-right: none;
+            }
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            display: block;
+            filter: grayscale(30%);
+            transition: all 0.4s ease;
+        }
+
+        .gallery-item:hover .gallery-img {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+            padding: 2rem 1.5rem 1.5rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        .gallery-title {
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .gallery-date {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+        }
+
+        /* Modal */
+        .gallery-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .gallery-modal.active {
+            display: flex;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--text-light);
+            background: transparent;
+            border: 2px solid var(--text-light);
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .modal-close:hover {
+            background: var(--text-light);
+            color: var(--bg-dark);
+        }
+
+        .modal-img {
+            max-width: 90%;
+            max-height: 80vh;
+            object-fit: contain;
+            border: 2px solid var(--text-light);
+        }
+
+        .modal-info {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--text-light);
+        }
+
+        .modal-date {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-text">GALLERY</div>
+        <div class="preloader-line"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <a href="index.html" class="nav-logo">
+            <img src="../IMAGES/isteofficiallogo.png" alt="ISTE" class="nav-logo-img">
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">HOME</a>
+            <a href="index.html#about" class="nav-link">ABOUT</a>
+            <a href="forums.html" class="nav-link">FORUMS</a>
+            <a href="events.html" class="nav-link">EVENTS</a>
+            <a href="execom.html" class="nav-link">EXECOM</a>
+            <a href="gallery.html" class="nav-link active">GALLERY</a>
+            <a href="contact.html" class="nav-link">CONTACT</a>
+        </div>
+        <div class="nav-menu-btn" id="menuBtn">
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html" class="mobile-link">HOME</a>
+        <a href="index.html#about" class="mobile-link">ABOUT</a>
+        <a href="forums.html" class="mobile-link">FORUMS</a>
+        <a href="events.html" class="mobile-link">EVENTS</a>
+        <a href="execom.html" class="mobile-link">EXECOM</a>
+        <a href="gallery.html" class="mobile-link">GALLERY</a>
+        <a href="contact.html" class="mobile-link">CONTACT</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" style="min-height: auto; padding-top: 160px; padding-bottom: 80px;">
+        <div class="section-bg-text">GALLERY</div>
+        <div class="hero-content">
+            <div class="hero-tag">MOMENTS CAPTURED</div>
+            <h1 class="hero-title">
+                <span class="title-line">PHOTO</span>
+                <span class="title-line accent">GALLERY</span>
+            </h1>
+            <p class="hero-subtitle">Capturing moments of innovation, collaboration, and excellence at ISTE SCTCE.</p>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="marquee-container">
+        <div class="marquee-track">
+            <span class="marquee-item">📸 WORKSHOPS</span>
+            <span class="marquee-item">🎉 EVENTS</span>
+            <span class="marquee-item">👥 TEAM</span>
+            <span class="marquee-item">🏆 ACHIEVEMENTS</span>
+            <span class="marquee-item">🎓 SEMINARS</span>
+            <span class="marquee-item">💡 INNOVATION</span>
+            <span class="marquee-item">📸 WORKSHOPS</span>
+            <span class="marquee-item">🎉 EVENTS</span>
+            <span class="marquee-item">👥 TEAM</span>
+            <span class="marquee-item">🏆 ACHIEVEMENTS</span>
+        </div>
+    </div>
+
+    <!-- Gallery Section -->
+    <section style="padding: var(--section-padding) 0; background: var(--bg-secondary);">
+        <div class="section-header">
+            <div class="section-tag">EXPLORE</div>
+            <h2 class="section-title">MOMENTS</h2>
+        </div>
+
+        <div class="gallery-grid">
+            <div class="gallery-item"
+                onclick="openGalleryModal('../IMAGES/event1.jpg', 'Technical Workshop', 'March 2024')">
+                <img src="../IMAGES/event1.jpg" alt="Technical Workshop" class="gallery-img">
+                <div class="gallery-overlay">
+                    <div class="gallery-title">Technical Workshop</div>
+                    <div class="gallery-date">MARCH 2024</div>
+                </div>
+            </div>
+
+            <div class="gallery-item"
+                onclick="openGalleryModal('../IMAGES/event2.jpg', 'Guest Lecture', 'February 2024')">
+                <img src="../IMAGES/event2.jpg" alt="Guest Lecture" class="gallery-img">
+                <div class="gallery-overlay">
+                    <div class="gallery-title">Guest Lecture</div>
+                    <div class="gallery-date">FEBRUARY 2024</div>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openGalleryModal('../IMAGES/event3.jpg', 'Hackathon', 'January 2024')">
+                <img src="../IMAGES/event3.jpg" alt="Hackathon" class="gallery-img">
+                <div class="gallery-overlay">
+                    <div class="gallery-title">Hackathon</div>
+                    <div class="gallery-date">JANUARY 2024</div>
+                </div>
+            </div>
+
+            <!-- Placeholder items -->
+            <div class="gallery-item"
+                style="background: var(--bg-primary); display: flex; align-items: center; justify-content: center; height: 280px;">
+                <span style="font-family: var(--font-display); font-size: 2rem; color: var(--border-light);">MORE
+                    SOON</span>
+            </div>
+
+            <div class="gallery-item"
+                style="background: var(--bg-primary); display: flex; align-items: center; justify-content: center; height: 280px;">
+                <span
+                    style="font-family: var(--font-display); font-size: 2rem; color: var(--border-light);">COMING</span>
+            </div>
+
+            <div class="gallery-item"
+                style="background: var(--bg-primary); display: flex; align-items: center; justify-content: center; height: 280px;">
+                <span style="font-family: var(--font-display); font-size: 2rem; color: var(--border-light);">2025</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div class="gallery-modal" id="galleryModal">
+        <button class="modal-close" onclick="closeGalleryModal()">CLOSE ×</button>
+        <img src="" alt="" class="modal-img" id="modalImg">
+        <div class="modal-info">
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-date" id="modalDate"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-logo">ISTE SCTCE</div>
+            <div class="footer-tagline">SHAPING THE FUTURE</div>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="footer-bottom">
+            <span class="footer-copyright">© 2025 ISTE STUDENT CHAPTER, SCTCE. ALL RIGHTS RESERVED.</span>
+            <div class="footer-links">
+                <a href="#">PRIVACY</a>
+                <a href="#">TERMS</a>
+                <a href="contact.html">CONTACT</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="../JS/brutalist.js"></script>
+    <script>
+        function openGalleryModal(src, title, date) {
+            const modal = document.getElementById('galleryModal');
+            const img = document.getElementById('modalImg');
+            const titleEl = document.getElementById('modalTitle');
+            const dateEl = document.getElementById('modalDate');
+
+            img.src = src;
+            titleEl.textContent = title;
+            dateEl.textContent = date;
+            modal.classList.add('active');
+
+            gsap.fromTo(img, { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4 });
+        }
+
+        function closeGalleryModal() {
+            document.getElementById('galleryModal').classList.remove('active');
+        }
+
+        document.getElementById('galleryModal').addEventListener('click', function (e) {
+            if (e.target === this) closeGalleryModal();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeGalleryModal();
+        });
+    </script>
+</body>
+
+</html>

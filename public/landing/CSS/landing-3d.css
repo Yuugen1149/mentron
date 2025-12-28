@@ -1,0 +1,391 @@
+:root {
+    --paper-color: #f4f1ea;
+    --paper-texture-url: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZjRmMWVhIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNlYWU2ZTAiLz4KPC9zdmc+');
+    --ink-color: #2c2c2c;
+    --ink-accent: #800000;
+    --font-masthead: 'UnifrakturMaguntia', 'Chomsky', serif;
+    --font-headline: 'Playfair Display', serif;
+    --font-body: 'Lora', serif;
+    --font-sans: 'Oswald', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #111; /* Dark background behind the paper */
+    color: var(--ink-color);
+    font-family: var(--font-body);
+    /* overflow: hidden; Removed to allow scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrollbar */
+}
+
+/* --- LAYOUT CONTAINER --- */
+
+#newspaper-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 2000px; /* Deep perspective for 3D flip */
+    overflow: hidden;
+}
+
+.newspaper-wrapper {
+    width: 90%;
+    max-width: 1000px;
+    height: 90vh;
+    position: relative;
+    transform-style: preserve-3d;
+}
+
+/* --- PAGE STYLING --- */
+
+.page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--paper-color);
+    transform-origin: top center; /* Flip vertically like a notepad or calendar */
+    /* transform-origin: left center; */ /* For book style, switch to this */
+    backface-visibility: hidden;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    /* Texture Overlay */
+    background-image: var(--paper-texture-url);
+    border: 1px solid #dcd9d0;
+}
+
+.paper-texture {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 40%, rgba(160, 140, 100, 0.1) 100%);
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: multiply;
+}
+
+.page-content {
+    position: relative;
+    z-index: 1;
+    padding: 3rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Shadow for flip animation */
+.page-shadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity 0.1s;
+}
+
+/* --- TYPOGRAPHY & SECTIONS --- */
+
+/* Masthead */
+.masthead {
+    text-align: center;
+    border-bottom: 2px double var(--ink-color);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+}
+
+.masthead h1 {
+    font-family: var(--font-masthead);
+    font-size: 5rem;
+    line-height: 1;
+    margin: 1rem 0;
+    letter-spacing: -2px;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.1); /* Ink press effect */
+}
+
+.meta-top {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--ink-color);
+    padding-bottom: 0.5rem;
+}
+
+.meta-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.border-lines {
+    flex-grow: 1;
+    height: 3px;
+    border-top: 1px solid var(--ink-color);
+    border-bottom: 1px solid var(--ink-color);
+}
+
+.date-price {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    padding: 0 1rem;
+}
+
+/* Headlines */
+.headline-large {
+    font-family: var(--font-headline);
+    font-size: 3.5rem;
+    line-height: 0.95;
+    margin-bottom: 1rem;
+    font-weight: 900;
+}
+
+.headline-med {
+    font-family: var(--font-headline);
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.subhead {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: #555;
+    border-left: 3px solid var(--ink-accent);
+    padding-left: 1rem;
+}
+
+/* Layout Grids */
+.layout-grid-main {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 2rem;
+    flex-grow: 1;
+    overflow-y: auto; /* Allow internal scrolling if content overflows page height? No, design fits. */
+}
+
+.layout-grid-asym {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 2rem;
+}
+
+.columns-3 {
+    column-count: 3;
+    column-gap: 1.5rem;
+    text-align: justify;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.columns-2 {
+    column-count: 2;
+    column-gap: 1.5rem;
+    text-align: justify;
+}
+
+.drop-cap {
+    float: left;
+    font-family: var(--font-masthead);
+    font-size: 3.5rem;
+    line-height: 0.8;
+    margin-right: 0.5rem;
+    margin-top: 0.2rem;
+    color: var(--ink-accent);
+}
+
+/* Images & Graphics */
+.placeholder-img {
+    width: 100%;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.5);
+    font-family: var(--font-sans);
+    margin-bottom: 0.5rem;
+    filter: sepia(0.3) contrast(1.2); /* Retro photo look */
+}
+
+.caption {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+/* Sidebar Elements */
+.sidebar {
+    border-left: 1px solid #ccc;
+    padding-left: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.weather-widget {
+    border: 2px solid var(--ink-color);
+    padding: 1rem;
+    text-align: center;
+}
+
+.weather-display {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: var(--font-sans);
+    margin: 0.5rem 0;
+}
+
+.ad-space {
+    border: 1px dashed var(--ink-color);
+    padding: 0.5rem;
+}
+
+.ad-border {
+    border: 1px solid var(--ink-color);
+    padding: 1rem;
+    text-align: center;
+    background-color: #eee;
+}
+
+.news-btn {
+    background: var(--ink-accent);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.news-btn:hover {
+    transform: scale(1.05);
+}
+
+/* --- CUTTINGS & INTERACTION --- */
+
+.cutting {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    padding: 5px; /* Hit area buffer */
+}
+
+.cutting::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border: 1px solid transparent;
+    pointer-events: none;
+    transition: border-color 0.3s;
+}
+
+.cutting:hover {
+    transform: scale(1.01); /* Subtle zoom */
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
+    z-index: 5;
+    background-color: rgba(255, 255, 255, 0.4); /* Highlight */
+}
+
+.cutting:hover::after {
+    border-color: rgba(139, 0, 0, 0.2); /* Faint red border */
+}
+
+/* Page 3 Columns */
+.layout-columns-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    border-top: 1px solid var(--ink-color);
+    padding-top: 2rem;
+}
+
+.col-section h4 {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--ink-color);
+    margin-bottom: 1rem;
+}
+
+.clean-list {
+    list-style: none;
+}
+
+.clean-list li {
+    margin-bottom: 0.8rem;
+    border-bottom: 1px dotted #ccc;
+    padding-bottom: 0.4rem;
+}
+
+/* UI Overlays */
+.sound-control {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    color: white;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+.sound-control:hover { opacity: 1; }
+
+.edition-info {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    z-index: 1000;
+    background: rgba(0,0,0,0.5);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+}
+
+/* --- RESPONSIVE --- */
+
+@media (max-width: 1024px) {
+    .masthead h1 { font-size: 3.5rem; }
+    .layout-grid-main { grid-template-columns: 1fr; }
+    .sidebar { border-left: none; border-top: 1px solid #ccc; padding-top: 2rem; padding-left: 0; flex-direction: row; flex-wrap: wrap;}
+    .sidebar > div { flex: 1; min-width: 200px; }
+}
+
+@media (max-width: 768px) {
+    .masthead h1 { font-size: 2.5rem; }
+    .columns-3, .columns-2 { column-count: 1; }
+    .newspaper-wrapper { width: 95%; height: 85vh; }
+    .page-content { padding: 1.5rem; }
+    .layout-columns-4 { grid-template-columns: 1fr 1fr; }
+    
+    /* On mobile, flip might need adjustment or simpler scroll */
+    .page { transform-origin: center center; } /* Maybe just fade or slide? keeping flip for now */
+}

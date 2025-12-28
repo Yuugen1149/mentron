@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardLayout } from '@/components/DashboardLayout';
-import { StudentsClient } from '@/components/StudentsClient';
+import { GroupManagementClient } from '@/components/GroupManagementClient';
+import { LoadingSkeleton } from '@/components/LoadingSkeleton';
 
 export default async function ChairmanStudentsPage() {
     const supabase = await createClient();
@@ -72,12 +74,14 @@ export default async function ChairmanStudentsPage() {
                         onSignOut={handleSignOut}
                     />
 
-                    <StudentsClient
-                        initialStudents={students || []}
-                        initialGroups={groupsWithCount}
-                        userDepartment={admin.department}
-                        userRole="chairman"
-                    />
+                    <Suspense fallback={<LoadingSkeleton type="card" />}>
+                        <GroupManagementClient
+                            initialStudents={students || []}
+                            initialGroups={groupsWithCount}
+                            userDepartment={admin.department}
+                            userRole="chairman"
+                        />
+                    </Suspense>
 
                     <div className="h-8 sm:h-0 mobile-nav-safe"></div>
                 </div>
@@ -85,3 +89,4 @@ export default async function ChairmanStudentsPage() {
         </DashboardLayout>
     );
 }
+

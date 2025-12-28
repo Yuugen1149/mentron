@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
     UnassignedStudentsList,
     StudentAssignmentModal,
+    BulkReassignmentModal,
     AssignmentHistory
 } from '@/components/assignment';
 
@@ -15,6 +16,7 @@ interface AssignmentsClientProps {
 export function AssignmentsClient({ userRole, userDepartment }: AssignmentsClientProps) {
     const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
     const [showAssignModal, setShowAssignModal] = useState(false);
+    const [showReassignModal, setShowReassignModal] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
     const [activeTab, setActiveTab] = useState<'unassigned' | 'history'>('unassigned');
 
@@ -23,10 +25,16 @@ export function AssignmentsClient({ userRole, userDepartment }: AssignmentsClien
         setRefreshKey(prev => prev + 1);
     }
 
+    function handleReassignmentComplete() {
+        setSelectedStudentIds([]);
+        setShowReassignModal(false);
+        setRefreshKey(prev => prev + 1);
+    }
+
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
                         Student Assignments
@@ -37,15 +45,26 @@ export function AssignmentsClient({ userRole, userDepartment }: AssignmentsClien
                 </div>
 
                 {selectedStudentIds.length > 0 && (
-                    <button
-                        onClick={() => setShowAssignModal(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-primary-cyan hover:bg-primary-cyan/80 text-white rounded-lg font-medium transition-colors"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                        </svg>
-                        Assign {selectedStudentIds.length} Student{selectedStudentIds.length > 1 ? 's' : ''}
-                    </button>
+                    <div className="flex flex-wrap gap-2">
+                        <button
+                            onClick={() => setShowAssignModal(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-primary-cyan hover:bg-primary-cyan/80 text-white rounded-lg font-medium transition-colors"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                            Assign {selectedStudentIds.length}
+                        </button>
+                        <button
+                            onClick={() => setShowReassignModal(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-secondary-purple hover:bg-secondary-purple/80 text-white rounded-lg font-medium transition-colors"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                            Reassign All Selected
+                        </button>
+                    </div>
                 )}
             </div>
 
@@ -99,8 +118,8 @@ export function AssignmentsClient({ userRole, userDepartment }: AssignmentsClien
                 <button
                     onClick={() => setActiveTab('unassigned')}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'unassigned'
-                            ? 'bg-primary-cyan text-white'
-                            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                        ? 'bg-primary-cyan text-white'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                         }`}
                 >
                     Unassigned Students
@@ -108,8 +127,8 @@ export function AssignmentsClient({ userRole, userDepartment }: AssignmentsClien
                 <button
                     onClick={() => setActiveTab('history')}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'history'
-                            ? 'bg-primary-cyan text-white'
-                            : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                        ? 'bg-primary-cyan text-white'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                         }`}
                 >
                     Assignment History
@@ -132,13 +151,22 @@ export function AssignmentsClient({ userRole, userDepartment }: AssignmentsClien
                 </div>
             </div>
 
-            {/* Assignment Modal */}
+            {/* Assignment Modal (for new assignments) */}
             <StudentAssignmentModal
                 isOpen={showAssignModal}
                 onClose={() => setShowAssignModal(false)}
                 selectedStudentIds={selectedStudentIds}
                 onAssignmentComplete={handleAssignmentComplete}
             />
+
+            {/* Bulk Reassignment Modal */}
+            <BulkReassignmentModal
+                isOpen={showReassignModal}
+                onClose={() => setShowReassignModal(false)}
+                selectedStudentIds={selectedStudentIds}
+                onReassignmentComplete={handleReassignmentComplete}
+            />
         </div>
     );
 }
+

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardLayout } from '@/components/DashboardLayout';
+import { SignOutButton } from '@/components/SignOutButton';
 
 export default async function StudentSettingsPage() {
     const supabase = await createClient();
@@ -144,7 +145,7 @@ export default async function StudentSettingsPage() {
                     </div>
 
                     {/* Notification Preferences */}
-                    <div className="glass-card">
+                    <div className="glass-card mb-6">
                         <h3 className="text-xl font-semibold mb-6">Notification Preferences</h3>
                         <div className="space-y-4">
                             <label className="flex items-center justify-between cursor-pointer">
@@ -162,10 +163,20 @@ export default async function StudentSettingsPage() {
                         </div>
                     </div>
 
+                    {/* Sign Out Section */}
+                    <div className="glass-card border-red-500/20">
+                        <h3 className="text-xl font-semibold mb-4 text-red-400">Sign Out</h3>
+                        <p className="text-text-secondary text-sm mb-4">
+                            Sign out of your account on this device. You&apos;ll need to log in again to access your dashboard.
+                        </p>
+                        <SignOutButton />
+                    </div>
+
                     {/* Mobile Bottom Padding */}
-                    <div className="h-8 sm:h-0 mobile-nav-safe"></div>
+                    <div className="h-24 sm:h-0 mobile-nav-safe"></div>
                 </div>
             </main>
         </DashboardLayout>
     );
 }
+

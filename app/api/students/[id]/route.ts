@@ -88,3 +88,49 @@ export async function DELETE(
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
+
+// GET - Get a specific student's details
+export async function GET(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const supabase = await createClient();
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Check if user is admin
+        const { data: admin } = await supabase
+            .from('admins')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+        if (!admin) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+
+        const { data: student, error } = await supabase
+            .from('group_members')
+            .select(`
+                *,
+                group:groups(*)
+            `)
+            .eq('id', id)
+            .single();
+
+        if (error) {
+            return NextResponse.json({ error: 'Student not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ student });
+
+    } catch (error: any) {
+        console.error('Error fetching student:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}

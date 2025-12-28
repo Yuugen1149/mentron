@@ -1,2 +1,0 @@
-# ISTE
-Website for Society

@@ -207,6 +207,30 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
         }
     };
 
+    const handleDeleteStudent = async (studentId: string) => {
+        if (!confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await fetch(`/api/students/${studentId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete student');
+            }
+
+            await refreshData();
+        } catch (error) {
+            console.error('Error deleting student:', error);
+            alert('Failed to delete student. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <>
             <DndContext
@@ -418,7 +442,11 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                                 <div className="space-y-2 max-h-96 overflow-y-auto">
                                     {filteredUnassigned.length > 0 ? (
                                         filteredUnassigned.map(student => (
-                                            <StudentCard key={student.id} student={student} />
+                                            <StudentCard
+                                                key={student.id}
+                                                student={student}
+                                                onDelete={() => handleDeleteStudent(student.id)}
+                                            />
                                         ))
                                     ) : (
                                         <div className="text-center py-8 text-text-secondary">
@@ -435,13 +463,13 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                                 Groups ({groups.length})
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {groups.map(group => (
-                                    <GroupCard
-                                        key={group.id}
-                                        group={group}
-                                        students={assignedStudents}
-                                        onDelete={handleDeleteGroup}
-                                    />
+                                <GroupCard
+                                    key={group.id}
+                                    group={group}
+                                    students={assignedStudents}
+                                    onDelete={handleDeleteGroup}
+                                    onDeleteStudent={handleDeleteStudent}
+                                />
                                 ))}
                             </div>
 

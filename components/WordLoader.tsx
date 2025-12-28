@@ -6,26 +6,25 @@
  */
 export function WordLoader() {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
-            <div className="word-loader-card">
-                <div className="word-loader">
-                    <p>loading</p>
-                    <div className="word-loader-words">
-                        <span className="word-loader-word">students</span>
-                        <span className="word-loader-word">materials</span>
-                        <span className="word-loader-word">groups</span>
-                        <span className="word-loader-word">dashboard</span>
-                        <span className="word-loader-word">students</span>
-                    </div>
+        <div className="word-loader-container">
+            <div className="word-loader">
+                <p>loading</p>
+                <div className="word-loader-words">
+                    <span className="word-loader-word">students</span>
+                    <span className="word-loader-word">materials</span>
+                    <span className="word-loader-word">groups</span>
+                    <span className="word-loader-word">dashboard</span>
+                    <span className="word-loader-word">students</span>
                 </div>
             </div>
 
             <style jsx>{`
-                .word-loader-card {
-                    --bg-color: #111;
-                    background-color: var(--bg-color);
-                    padding: 1rem 2rem;
-                    border-radius: 1.25rem;
+                .word-loader-container {
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: transparent;
                 }
 
                 .word-loader {
@@ -50,10 +49,10 @@ export function WordLoader() {
                     position: absolute;
                     inset: 0;
                     background: linear-gradient(
-                        var(--bg-color) 10%,
-                        transparent 30%,
-                        transparent 70%,
-                        var(--bg-color) 90%
+                        transparent 0%,
+                        transparent 25%,
+                        transparent 75%,
+                        transparent 100%
                     );
                     z-index: 20;
                 }
@@ -96,3 +95,4 @@ export function WordLoader() {
         </div>
     );
 }
+

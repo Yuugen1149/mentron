@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { TrendIndicator } from './TrendIndicator';
 import { MiniBarChart } from './MiniBarChart';
 
@@ -13,7 +14,15 @@ interface StatCardProps {
     icon?: React.ReactNode;
 }
 
-export function StatCard({
+// Static constants moved outside component
+const BG_COLORS = {
+    blue: 'bg-gradient-to-br from-blue-500/10 to-blue-600/5',
+    purple: 'bg-gradient-to-br from-purple-500/10 to-purple-600/5',
+    pink: 'bg-gradient-to-br from-pink-500/10 to-pink-600/5',
+    cyan: 'bg-gradient-to-br from-cyan-500/10 to-cyan-600/5',
+} as const;
+
+export const StatCard = memo(function StatCard({
     title,
     value,
     trend,
@@ -22,15 +31,10 @@ export function StatCard({
     color = 'blue',
     icon
 }: StatCardProps) {
-    const bgColors = {
-        blue: 'bg-gradient-to-br from-blue-500/10 to-blue-600/5',
-        purple: 'bg-gradient-to-br from-purple-500/10 to-purple-600/5',
-        pink: 'bg-gradient-to-br from-pink-500/10 to-pink-600/5',
-        cyan: 'bg-gradient-to-br from-cyan-500/10 to-cyan-600/5',
-    };
+    const hasChartData = chartData && chartData.length > 0;
 
     return (
-        <div className={`glass-card ${bgColors[color]} hover:scale-[1.02] transition-transform active:scale-[0.98] touch-manipulation`}>
+        <div className={`glass-card ${BG_COLORS[color]} hover:scale-[1.02] transition-transform active:scale-[0.98] touch-manipulation`}>
             <div className="flex items-start justify-between mb-2">
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
@@ -47,11 +51,12 @@ export function StatCard({
                 </div>
             </div>
 
-            {chartData && chartData.length > 0 && (
+            {hasChartData && (
                 <div className="mt-3">
                     <MiniBarChart data={chartData} color={color} />
                 </div>
             )}
         </div>
     );
-}
+});
+

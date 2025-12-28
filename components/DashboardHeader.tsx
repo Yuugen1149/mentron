@@ -240,18 +240,98 @@ export function DashboardHeader({ userName, subtitle, userRole, onSignOut }: Das
             </div>
 
             {/* Mobile Header Row */}
-            <div className="md:hidden flex items-center justify-between mb-4">
-                <div className="flex-1 min-w-0 mr-4">
-                    <AnimatedSearchBar
-                        value={searchQuery}
-                        onChange={setSearchQuery}
-                        onFocus={() => searchQuery && setShowResults(true)}
-                        placeholder="Search..."
-                    />
+            <div className="md:hidden relative mb-4" ref={searchRef}>
+                <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0 mr-4">
+                        <AnimatedSearchBar
+                            value={searchQuery}
+                            onChange={setSearchQuery}
+                            onFocus={() => searchQuery && setShowResults(true)}
+                            placeholder="Search..."
+                        />
+                    </div>
+                    <div className="flex-shrink-0">
+                        <ThemeToggle />
+                    </div>
                 </div>
-                <div className="flex-shrink-0">
-                    <ThemeToggle />
-                </div>
+
+                {/* Mobile Search Results Dropdown */}
+                {showResults && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--deep-bg)] border border-[var(--glass-border)] rounded-xl shadow-2xl overflow-hidden max-h-80 overflow-y-auto z-50">
+                        {/* Loading Indicator */}
+                        {isSearching && (
+                            <div className="p-4 flex items-center justify-center gap-2">
+                                <svg className="animate-spin w-5 h-5 text-primary-cyan" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span className="text-sm text-[var(--text-secondary)]">Searching...</span>
+                            </div>
+                        )}
+                        {searchResults.features.length > 0 && (
+                            <div className="p-2">
+                                <div className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider px-2 py-1">Features</div>
+                                {searchResults.features.map((item, idx) => (
+                                    <button key={idx} onClick={() => handleResultClick(item.path)} className="w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-2 group">
+                                        <svg className="w-4 h-4 text-primary-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                        <span className="text-sm font-medium text-[var(--text-primary)] group-hover:text-primary-cyan">{item.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Groups */}
+                        {searchResults.groups.length > 0 && (
+                            <div className="p-2 border-t border-[var(--glass-border)]">
+                                <div className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider px-2 py-1">Groups</div>
+                                {searchResults.groups.map((item) => (
+                                    <button key={item.id} onClick={() => handleResultClick(`/chairman/groups/${item.id}`)} className="w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-2 group">
+                                        <svg className="w-4 h-4 text-secondary-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                        <span className="text-sm font-medium text-[var(--text-primary)] group-hover:text-secondary-purple">{item.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Materials */}
+                        {searchResults.materials.length > 0 && (
+                            <div className="p-2 border-t border-[var(--glass-border)]">
+                                <div className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider px-2 py-1">Materials</div>
+                                {searchResults.materials.map((item) => (
+                                    <button key={item.id} onClick={() => handleResultClick(`/${userRole}/materials/${item.id}`)} className="w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-2 group">
+                                        <svg className="w-4 h-4 text-accent-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                        <span className="text-sm font-medium text-[var(--text-primary)] group-hover:text-accent-pink">{item.title}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Students */}
+                        {searchResults.students.length > 0 && (
+                            <div className="p-2 border-t border-[var(--glass-border)]">
+                                <div className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider px-2 py-1">Students</div>
+                                {searchResults.students.map((item) => (
+                                    <button key={item.id} onClick={() => handleResultClick(`/${userRole}/students?highlight=${item.id}`)} className="w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 flex items-center gap-2 group">
+                                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-cyan to-secondary-purple flex items-center justify-center text-xs font-bold text-white">
+                                            {(item.name || item.email)?.[0]?.toUpperCase() || '?'}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <span className="text-sm font-medium text-[var(--text-primary)] group-hover:text-primary-cyan truncate block">{item.name || item.email}</span>
+                                            <span className="text-xs text-[var(--text-secondary)] truncate block">{item.department} • Year {item.year}</span>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Empty State */}
+                        {!isSearching && !searchResults.features.length && !searchResults.materials.length && !searchResults.groups.length && !searchResults.students.length && (
+                            <div className="p-4 text-center text-[var(--text-secondary)] text-sm">
+                                No results found for &quot;{searchQuery}&quot;
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -7,6 +7,7 @@ interface CreateGroupModalProps {
     onClose: () => void;
     onSuccess: () => void;
     userDepartment: string;
+    userRole?: 'execom' | 'chairman';
 }
 
 const COLORS = [

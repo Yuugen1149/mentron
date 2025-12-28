@@ -7,6 +7,7 @@ interface AnalyticsWidgetProps {
     secondaryMetricLabel?: string;
     secondaryMetricValue: string | number;
     secondaryMetricGrowth?: string;
+    chartData?: number[];
 }
 
 export function AnalyticsWidget({
@@ -15,8 +16,13 @@ export function AnalyticsWidget({
     viewGrowth = "+12.3%",
     secondaryMetricLabel = "Conversions",
     secondaryMetricValue,
-    secondaryMetricGrowth = "+8.1%"
+    secondaryMetricGrowth = "+8.1%",
+    chartData = [40, 60, 75, 45, 85, 65, 95]
 }: AnalyticsWidgetProps) {
+    // Calculate chart bar heights based on data
+    const maxValue = Math.max(...chartData, 1);
+    const normalizedData = chartData.map(val => Math.round((val / maxValue) * 100));
+
     return (
         <div className="group relative flex w-full max-w-sm flex-col rounded-xl bg-slate-950 p-4 shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-indigo-500/20">
             <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-20 blur-sm transition-opacity duration-300 group-hover:opacity-30"></div>
@@ -43,39 +49,35 @@ export function AnalyticsWidget({
                     <div className="rounded-lg bg-slate-900/50 p-3">
                         <p className="text-xs font-medium text-slate-400">Total Views</p>
                         <p className="text-lg font-semibold text-white">{viewCount}</p>
-                        <span className="text-xs font-medium text-emerald-500">{viewGrowth}</span>
+                        <span className={`text-xs font-medium ${viewGrowth?.startsWith('-') ? 'text-red-400' : 'text-emerald-500'}`}>
+                            {viewGrowth}
+                        </span>
                     </div>
 
                     <div className="rounded-lg bg-slate-900/50 p-3">
                         <p className="text-xs font-medium text-slate-400">{secondaryMetricLabel}</p>
                         <p className="text-lg font-semibold text-white">{secondaryMetricValue}</p>
-                        <span className="text-xs font-medium text-emerald-500">{secondaryMetricGrowth}</span>
+                        <span className={`text-xs font-medium ${secondaryMetricGrowth?.startsWith('-') ? 'text-red-400' : 'text-emerald-500'}`}>
+                            {secondaryMetricGrowth}
+                        </span>
                     </div>
                 </div>
 
+                {/* Dynamic Chart */}
                 <div className="mb-4 h-24 w-full overflow-hidden rounded-lg bg-slate-900/50 p-3">
                     <div className="flex h-full w-full items-end justify-between gap-1">
-                        <div className="h-[40%] w-3 rounded-sm bg-indigo-500/30">
-                            <div className="h-[60%] w-full rounded-sm bg-indigo-500 transition-all duration-300"></div>
-                        </div>
-                        <div className="h-[60%] w-3 rounded-sm bg-indigo-500/30">
-                            <div className="h-[40%] w-full rounded-sm bg-indigo-500 transition-all duration-300"></div>
-                        </div>
-                        <div className="h-[75%] w-3 rounded-sm bg-indigo-500/30">
-                            <div className="h-[80%] w-full rounded-sm bg-indigo-500 transition-all duration-300"></div>
-                        </div>
-                        <div className="h-[45%] w-3 rounded-sm bg-indigo-500/30">
-                            <div className="h-[50%] w-full rounded-sm bg-indigo-500 transition-all duration-300"></div>
-                        </div>
-                        <div className="h-[85%] w-3 rounded-sm bg-indigo-500/30">
-                            <div className="h-[90%] w-full rounded-sm bg-indigo-500 transition-all duration-300"></div>
-                        </div>
-                        <div className="h-[65%] w-3 rounded-sm bg-indigo-500/30">
-                            <div className="h-[70%] w-full rounded-sm bg-indigo-500 transition-all duration-300"></div>
-                        </div>
-                        <div className="h-[95%] w-3 rounded-sm bg-indigo-500/30">
-                            <div className="h-[85%] w-full rounded-sm bg-indigo-500 transition-all duration-300"></div>
-                        </div>
+                        {normalizedData.map((height, index) => (
+                            <div
+                                key={index}
+                                className="w-3 rounded-sm bg-indigo-500/30"
+                                style={{ height: `${Math.max(height, 5)}%` }}
+                            >
+                                <div
+                                    className="w-full rounded-sm bg-indigo-500 transition-all duration-300"
+                                    style={{ height: `${Math.min(height + 15, 100)}%` }}
+                                ></div>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
@@ -98,3 +100,4 @@ export function AnalyticsWidget({
         </div>
     );
 }
+

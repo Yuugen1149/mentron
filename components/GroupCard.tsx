@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, memo, useMemo, useCallback } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 
 interface Group {
@@ -28,18 +28,26 @@ interface GroupCardProps {
     group: Group;
     students: Student[];
     onDelete?: (groupId: string) => void;
-    isOver?: boolean;
+    onDeleteStudent?: (student: Student) => void;
     onReassignStudent?: (student: Student) => void;
+    isOver?: boolean;
 }
 
-export function GroupCard({ group, students, onDelete, isOver, onReassignStudent }: GroupCardProps) {
+export const GroupCard = memo(function GroupCard({ group, students, onDelete, onDeleteStudent, onReassignStudent, isOver }: GroupCardProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const { setNodeRef } = useDroppable({
         id: group.id,
         data: { group }
     });
 
-    const groupStudents = students.filter(s => s.group_id === group.id);
+    // Memoize filtered students to prevent recalculation
+    const groupStudents = useMemo(() =>
+        students.filter(s => s.group_id === group.id || (group.id === 'unassigned' && !s.group_id)),
+        [students, group.id]
+    );
+
+    // Memoize toggle handler
+    const toggleExpanded = useCallback(() => setIsExpanded(prev => !prev), []);
 
     return (
         <div
@@ -50,7 +58,7 @@ export function GroupCard({ group, students, onDelete, isOver, onReassignStudent
             {/* Group Header */}
             <div
                 className="flex items-center justify-between cursor-pointer"
-                onClick={() => setIsExpanded(!isExpanded)}
+                onClick={toggleExpanded}
             >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div
@@ -129,10 +137,10 @@ export function GroupCard({ group, students, onDelete, isOver, onReassignStudent
                         groupStudents.map(student => (
                             <div
                                 key={student.id}
-                                className="flex items-center gap-3 p-2 rounded-lg bg-white/5"
+                                className="group flex items-center gap-3 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
                             >
                                 <div
-                                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+                                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                                     style={{
                                         background: `linear-gradient(135deg, ${group.color}, ${group.color}dd)`
                                     }}
@@ -149,20 +157,38 @@ export function GroupCard({ group, students, onDelete, isOver, onReassignStudent
                                         ].filter(Boolean).join(' • ')}
                                     </div>
                                 </div>
-                                {onReassignStudent && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            onReassignStudent(student);
-                                        }}
-                                        className="p-1.5 rounded-lg hover:bg-white/10 text-text-secondary hover:text-primary-cyan transition-colors ml-2"
-                                        title="Reassign"
-                                    >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                                        </svg>
-                                    </button>
-                                )}
+
+                                {/* Student Actions - visible on mobile, hover on desktop */}
+                                <div className="flex items-center gap-1 flex-shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                    {onReassignStudent && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onReassignStudent(student);
+                                            }}
+                                            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-text-secondary hover:text-primary-cyan transition-all"
+                                            title="Reassign Student"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                            </svg>
+                                        </button>
+                                    )}
+                                    {onDeleteStudent && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onDeleteStudent(student);
+                                            }}
+                                            className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-text-secondary hover:text-red-400 transition-all"
+                                            title="Delete Student"
+                                        >
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         ))
                     ) : (
@@ -174,4 +200,4 @@ export function GroupCard({ group, students, onDelete, isOver, onReassignStudent
             )}
         </div>
     );
-}
+});

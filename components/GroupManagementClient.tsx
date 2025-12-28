@@ -7,8 +7,10 @@ import { CreateGroupModal } from '@/components/CreateGroupModal';
 import { GroupCard } from '@/components/GroupCard';
 import { StudentCard } from '@/components/StudentCard';
 import { StudentReassignmentModal } from '@/components/StudentReassignmentModal';
+import { DeleteStudentModal } from '@/components/DeleteStudentModal';
 import { AssignmentsClient } from '@/components/assignment';
 import { HierarchicalView } from '@/components/hierarchy/HierarchicalView';
+
 
 interface Student {
     id: string;
@@ -70,6 +72,7 @@ export function GroupManagementClient({
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [activeStudent, setActiveStudent] = useState<Student | null>(null);
     const [reassignStudent, setReassignStudent] = useState<Student | null>(null);
+    const [deleteStudent, setDeleteStudent] = useState<Student | null>(null);
     const [hierarchyStats, setHierarchyStats] = useState<HierarchyStats | null>(null);
     const [refreshKey, setRefreshKey] = useState(0);
 
@@ -272,6 +275,7 @@ export function GroupManagementClient({
                                 }}
                                 students={studentsByGroup['unassigned'] || []}
                                 onReassignStudent={handleReassignClick}
+                                onDeleteStudent={setDeleteStudent}
                             />
 
                             {/* Group Cards */}
@@ -282,6 +286,7 @@ export function GroupManagementClient({
                                     students={studentsByGroup[group.id] || []}
                                     onDelete={() => handleDeleteGroup(group.id)}
                                     onReassignStudent={handleReassignClick}
+                                    onDeleteStudent={setDeleteStudent}
                                 />
                             ))}
                         </div>
@@ -334,6 +339,14 @@ export function GroupManagementClient({
                 currentGroupId={reassignStudent?.group_id || null}
                 groups={groups}
                 onSuccess={refreshData}
+            />
+
+            {/* Delete Student Modal */}
+            <DeleteStudentModal
+                isOpen={!!deleteStudent}
+                onClose={() => setDeleteStudent(null)}
+                onSuccess={refreshData}
+                student={deleteStudent}
             />
         </div>
     );

@@ -83,8 +83,42 @@ export function StudentDashboardClient({ initialMaterials }: StudentDashboardCli
         }
     }, [isAssigned, studentGroup?.id, fetchMaterials]);
 
-    // Mock data for charts
-    const mockWeeklyData = [5, 8, 6, 12, 9, 15, 11];
+    // Calculate real chart data based on materials created_at
+    const calculateMaterialsChartData = useCallback(() => {
+        const counts = [0, 0, 0, 0, 0, 0, 0];
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        materials.forEach(material => {
+            const itemDate = new Date(material.created_at);
+            const itemDay = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
+            const diffTime = today.getTime() - itemDay.getTime();
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays >= 0 && diffDays < 7) {
+                counts[6 - diffDays]++;
+            }
+        });
+
+        return counts;
+    }, [materials]);
+
+    // Calculate new materials this week
+    const calculateNewThisWeek = useCallback(() => {
+        const now = new Date();
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        return materials.filter(m => new Date(m.created_at) > weekAgo).length;
+    }, [materials]);
+
+    // Calculate total views from materials
+    const calculateTotalViews = useCallback(() => {
+        return materials.reduce((sum, m) => sum + (m.view_count || 0), 0);
+    }, [materials]);
+
+    const weeklyChartData = calculateMaterialsChartData();
+    const newThisWeek = calculateNewThisWeek();
+    const totalViews = calculateTotalViews();
+
 
     // Loading state
     if (isLoading) {
@@ -158,9 +192,12 @@ export function StudentDashboardClient({ initialMaterials }: StudentDashboardCli
                 <StatCard
                     title="Available Materials"
                     value={materials.length}
-                    trend={{ percentage: 8, direction: 'up' }}
+                    trend={{
+                        percentage: newThisWeek > 0 ? Math.round((newThisWeek / Math.max(materials.length, 1)) * 100) : 0,
+                        direction: newThisWeek > 0 ? 'up' : 'neutral'
+                    }}
                     subtitle={`For ${studentGroup?.department || 'your group'}`}
-                    chartData={mockWeeklyData}
+                    chartData={weeklyChartData}
                     color="blue"
                     icon={
                         <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,11 +207,14 @@ export function StudentDashboardClient({ initialMaterials }: StudentDashboardCli
                 />
 
                 <StatCard
-                    title="Materials Viewed"
-                    value={0}
-                    trend={{ percentage: 0, direction: 'neutral' }}
-                    subtitle="This week"
-                    chartData={[0, 0, 0, 0, 0, 0, 0]}
+                    title="Total Views"
+                    value={totalViews}
+                    trend={{
+                        percentage: totalViews > 0 ? 12 : 0,
+                        direction: totalViews > 0 ? 'up' : 'neutral'
+                    }}
+                    subtitle="All materials"
+                    chartData={weeklyChartData}
                     color="purple"
                     icon={
                         <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -186,10 +226,13 @@ export function StudentDashboardClient({ initialMaterials }: StudentDashboardCli
 
                 <StatCard
                     title="New This Week"
-                    value={0}
-                    trend={{ percentage: 0, direction: 'neutral' }}
+                    value={newThisWeek}
+                    trend={{
+                        percentage: newThisWeek > 0 ? 100 : 0,
+                        direction: newThisWeek > 0 ? 'up' : 'neutral'
+                    }}
                     subtitle="Recently added"
-                    chartData={[0, 0, 0, 0, 0, 0, 0]}
+                    chartData={weeklyChartData}
                     color="cyan"
                     icon={
                         <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

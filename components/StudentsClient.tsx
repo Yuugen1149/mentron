@@ -463,13 +463,14 @@ export function StudentsClient({ initialStudents, initialGroups, userDepartment,
                                 Groups ({groups.length})
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <GroupCard
-                                    key={group.id}
-                                    group={group}
-                                    students={assignedStudents}
-                                    onDelete={handleDeleteGroup}
-                                    onDeleteStudent={handleDeleteStudent}
-                                />
+                                {groups.map(group => (
+                                    <GroupCard
+                                        key={group.id}
+                                        group={group}
+                                        students={assignedStudents}
+                                        onDelete={handleDeleteGroup}
+                                        onDeleteStudent={(student) => handleDeleteStudent(student.id)}
+                                    />
                                 ))}
                             </div>
 

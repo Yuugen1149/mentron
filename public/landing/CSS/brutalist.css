@@ -226,7 +226,8 @@ a {
     opacity: 0;
     visibility: hidden;
     transition: opacity var(--transition-medium), visibility var(--transition-medium);
-    z-index: 999;
+    z-index: 1000;
+    /* Above brand ticker */
 }
 
 .mobile-menu.active {
@@ -255,7 +256,8 @@ a {
     justify-content: center;
     position: relative;
     padding: var(--section-padding) var(--container-padding);
-    padding-top: calc(var(--section-padding) + 100px);
+    padding-top: calc(var(--section-padding) + 140px);
+    /* 100px navbar + 40px ticker */
     overflow: hidden;
 }
 
@@ -522,6 +524,55 @@ a {
 }
 
 @keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* ==========================================
+   BRAND TICKER (Fixed below navbar)
+   ========================================== */
+.brand-ticker {
+    position: fixed;
+    top: 100px;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    background: var(--accent);
+    padding: 0.5rem 0;
+    z-index: 999;
+    border-bottom: 2px solid var(--border);
+}
+
+.brand-ticker-track {
+    display: flex;
+    align-items: center;
+    animation: brandScroll 20s linear infinite;
+    width: max-content;
+}
+
+.brand-ticker-item {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+    padding: 0 1.5rem;
+    white-space: nowrap;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.brand-ticker-dot {
+    font-size: 1rem;
+    color: var(--text-light);
+    opacity: 0.7;
+}
+
+@keyframes brandScroll {
     0% {
         transform: translateX(0);
     }
@@ -1256,6 +1307,24 @@ a {
         gap: 1rem;
         text-align: center;
     }
+
+    .brand-ticker {
+        top: 80px;
+        padding: 0.35rem 0;
+    }
+
+    .brand-ticker-item {
+        font-size: 1.1rem;
+        padding: 0 1rem;
+    }
+
+    .brand-ticker-dot {
+        font-size: 0.8rem;
+    }
+
+    .hero {
+        padding-top: calc(var(--section-padding) + 110px);
+    }
 }
 
 /* ==========================================
@@ -1271,7 +1340,8 @@ a {
         transition-duration: 0.01ms !important;
     }
 
-    .marquee-track {
+    .marquee-track,
+    .brand-ticker-track {
         animation: none;
     }
 }

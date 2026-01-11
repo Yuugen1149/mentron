@@ -34,7 +34,7 @@ export default async function RootPage() {
 
     return (
         <iframe
-            src="/landing/index.html"
+            src="/landing/"
             style={{
                 position: 'fixed',
                 top: 0,

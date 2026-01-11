@@ -26,13 +26,6 @@ export function NotificationsPanel({ userRole }: NotificationsPanelProps) {
 
     const canAnnounce = userRole === 'execom' || userRole === 'chairman';
 
-    useEffect(() => {
-        fetchNotifications();
-        // Poll for new notifications every 30 seconds
-        const interval = setInterval(fetchNotifications, 30000);
-        return () => clearInterval(interval);
-    }, []);
-
     const fetchNotifications = async () => {
         try {
             const response = await fetch('/api/notifications');
@@ -43,6 +36,13 @@ export function NotificationsPanel({ userRole }: NotificationsPanelProps) {
             console.error('Failed to fetch notifications:', error);
         }
     };
+
+    useEffect(() => {
+        fetchNotifications();
+        // Poll for new notifications every 30 seconds
+        const interval = setInterval(fetchNotifications, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const markAsRead = async (id: string) => {
         try {

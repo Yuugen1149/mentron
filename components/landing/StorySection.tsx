@@ -53,6 +53,9 @@ export function StorySection({
     // Rotation effect
     const rotate = useTransform(scrollYProgress, [0, 0.5, 1], isEven ? [-5, 0, 5] : [5, 0, -5]);
 
+    // Image scale transform
+    const imageScale = useTransform(scrollYProgress, [0.2, 0.5, 0.8], [1.2, 1, 1.2]);
+
     return (
         <section
             id={id}
@@ -107,32 +110,13 @@ export function StorySection({
                         {/* Stats - staggered animation */}
                         <div className="grid grid-cols-3 gap-6">
                             {stats.map((stat, statIndex) => (
-                                <motion.div
+                                <StatItem
                                     key={statIndex}
-                                    className="text-center"
-                                    style={{
-                                        opacity: useTransform(
-                                            scrollYProgress,
-                                            [0.3 + statIndex * 0.05, 0.4 + statIndex * 0.05],
-                                            [0, 1]
-                                        ),
-                                        y: useTransform(
-                                            scrollYProgress,
-                                            [0.3 + statIndex * 0.05, 0.4 + statIndex * 0.05],
-                                            [30, 0]
-                                        )
-                                    }}
-                                >
-                                    <div
-                                        className="stat-value"
-                                        style={{ color: glowColor }}
-                                    >
-                                        {stat.value}
-                                    </div>
-                                    <div className="stat-label text-xs uppercase tracking-wider text-text-secondary mt-2">
-                                        {stat.label}
-                                    </div>
-                                </motion.div>
+                                    stat={stat}
+                                    index={statIndex}
+                                    scrollYProgress={scrollYProgress}
+                                    glowColor={glowColor}
+                                />
                             ))}
                         </div>
                     </motion.div>
@@ -154,7 +138,7 @@ export function StorySection({
                                     alt={title}
                                     className="w-full h-full object-cover"
                                     style={{
-                                        scale: useTransform(scrollYProgress, [0.2, 0.5, 0.8], [1.2, 1, 1.2])
+                                        scale: imageScale
                                     }}
                                 />
                             </div>
@@ -174,5 +158,40 @@ export function StorySection({
                 </div>
             </div>
         </section>
+    );
+}
+
+function StatItem({ stat, index, scrollYProgress, glowColor }: {
+    stat: { value: string; label: string };
+    index: number;
+    scrollYProgress: any;
+    glowColor: string;
+}) {
+    const opacity = useTransform(
+        scrollYProgress,
+        [0.3 + index * 0.05, 0.4 + index * 0.05],
+        [0, 1]
+    );
+    const y = useTransform(
+        scrollYProgress,
+        [0.3 + index * 0.05, 0.4 + index * 0.05],
+        [30, 0]
+    );
+
+    return (
+        <motion.div
+            className="text-center"
+            style={{ opacity, y }}
+        >
+            <div
+                className="stat-value"
+                style={{ color: glowColor }}
+            >
+                {stat.value}
+            </div>
+            <div className="stat-label text-xs uppercase tracking-wider text-text-secondary mt-2">
+                {stat.label}
+            </div>
+        </motion.div>
     );
 }
